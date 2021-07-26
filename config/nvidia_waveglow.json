@@ -1,0 +1,29 @@
+{
+    "github_repo": "https://github.com/NVIDIA/waveglow",
+    "commit": "8afb643df59265016af6bd255c7516309d675168",
+    "wav_config": {
+        "sample_rate": 22050,
+        "normalize_loudness": null,
+        "peak_norm": null,
+        "trim_silence_threshold_in_db": null
+    },
+    "spec_config": {
+        "preemphasis": null,
+        "n_fft": 1024,
+        "hop_length": 256,
+        "win_length": 1024,
+        "stft_power": 1,
+        "mel_spec": true,
+        "num_mels": 80,
+        "fmin": 0,
+        "fmax": 8000
+    },
+    "post_config": {
+        "amp_to_db": true,
+        "log_base": "e",
+        "log_factor": 1,
+        "normalize_spec": false,
+        "ref_level_db": 0,
+        "min_level_db": -100
+    }
+}
