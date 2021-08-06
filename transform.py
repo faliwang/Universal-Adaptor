@@ -17,7 +17,7 @@ def process(x):
     np.save(outpath, S, allow_pickle=False)
 
 
-def generate(src_config, tgt_config, data, extension,
+def transform(src_config, tgt_config, data, extension,
              n_iter, n_workers, outdir):
     # Load config from json
     with open(src_config, 'r') as f:
@@ -63,4 +63,4 @@ if __name__ == '__main__':
     parser.add_argument('--outdir', '-o', metavar='OUT', default='res',
                         help='Output directory')
     args = parser.parse_args()
-    generate(**vars(args))
+    transform(**vars(args))

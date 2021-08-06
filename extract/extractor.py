@@ -7,6 +7,7 @@ class Extractor:
         self.wav_config = config["wav_config"]
         self.spec_config = config["spec_config"]
         self.post_config = config["post_config"]
+        self.github_repo = config["github_repo"]
 
     def load(self, path):
         y = audio.load_wav(path, self.wav_config["sample_rate"])
