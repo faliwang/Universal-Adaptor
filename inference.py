@@ -14,7 +14,7 @@ from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config
 def parse_args():
     """arguments"""
     config = {
-        "data_dir": "/work/b07502172/universal_adaptor/trial/mels/inference_trial",
+        "data_dir": "/work/b07502172/universal_adaptor/trial/mels/gt_trans",
         "config_dir": "./config",
         "model_path": "/home/b07502172/universal_adaptor/Acoustic-feature-converter/results/model_unet_3layer_base32_resadd_config.ckpt",
         "output_dir": "/home/b07502172/universal_adaptor/Acoustic-feature-converter/results/mels_save",

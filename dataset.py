@@ -162,7 +162,7 @@ class InferenceDataset(Dataset):
 
     def __getitem__(self, index):
         input_path, model_name, input_name = self.data[index]
-        mel = torch.from_numpy(np.load(input_path))
+        mel = torch.from_numpy(np.load(input_path)).float()
         for config, config_name in self.configs:
             if config_name == model_name.split('_')[-1]:
                 tgt_config = config
