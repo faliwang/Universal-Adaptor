@@ -109,7 +109,7 @@ class AudioDataset(Dataset):
             gt_mels = sorted(os.listdir(gt_model_dir))
             for input_mel, gt_mel in zip(input_mels, gt_mels):
                 if input_mel != gt_mel:
-                    print("we get wrong pair of files: input {} & ground truth {}".format(input_mel, gt_mel))
+                    print("we get wrong pair of files: input {} & ground truth {} in {}".format(input_mel, gt_mel, model_name))
                     continue
                 input_path = os.path.join(input_model_dir, input_mel)
                 gt_path = os.path.join(gt_model_dir, gt_mel)

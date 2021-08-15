@@ -14,7 +14,7 @@ from torch.optim.lr_scheduler import LambdaLR
  
 
 from dataset import AudioDataset
-from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config
+from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config, Refiner_ResNet_with_config
 
 
 def get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length):
@@ -154,7 +154,7 @@ def parse_args():
         "data_type": "npy",
         "config_dir": "./config",
         "out_dir": "/home/b07502172/universal_adaptor/Acoustic-feature-converter/results",
-        "batch_size": 32,
+        "batch_size": 16,
         "n_workers": 4,
         "segment_length": 200,
         "valid_steps": 2000,
@@ -187,7 +187,7 @@ def main(
     train_iterator = iter(train_loader)
     print(f"[Info]: Finish loading data!",flush = True)
 
-    model = Refiner_UNet_with_config(n_channels=20, num_layers=3, base=16, bilinear=False, res_add=True).to(device)
+    model = Refiner_ResNet_with_config(n_channels=20, block='bottleneck', layers=[3, 4, 6, 3], groups=32, width_per_group=4).to(device)
     criterion = nn.MSELoss()
     optimizer = AdamW(model.parameters(), lr=1e-3)
     scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
