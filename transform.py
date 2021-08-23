@@ -30,8 +30,8 @@ def transform(src_config, tgt_config, data, extension,
     tgt_ext = Extractor(tgt_cfg)
 
     # Search for files
-    f_list = [(src_ext, tgt_ext, n_iter, os.path.join(data, x), outdir)
-              for x in os.listdir(data) if x.endswith(extension)]
+    data_list = [os.path.join(data, x) for x in os.listdir(data) if x.endswith(extension)]
+    f_list = [(src_ext, tgt_ext, n_iter, x, outdir) for x in data_list]
     print(f'{len(f_list)} {extension[1:]} files found in {data}')
 
     # Extract

@@ -11,10 +11,11 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from torch.nn.utils.rnn import pad_sequence
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LambdaLR
+from tensorboardX import SummaryWriter 
  
 
 from dataset import AudioDataset
-from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config, Refiner_ResNet_with_config
+from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config, Refiner_ResNet_with_config, Refiner_R2AttUNet_with_config
 
 
 def get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length):
@@ -112,10 +113,26 @@ def model_fn(batch, model, criterion, device):
     config = config.to(device)
 
     outs = model(inputs, config)
-
-    loss = criterion(outs, gt)
+    if isinstance(outs, list):
+        loss = 0.0
+        for out in outs:
+            loss = loss + criterion(out, gt)
+        loss = loss / len(outs)
+    else:
+        loss = criterion(outs, gt)
 
     return loss
+
+
+class BCELoss(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.criterion = nn.BCELoss()
+    
+    def forward(self, output, gt):
+        _output = torch.sigmoid(output)
+        _gt = torch.sigmoid(gt)
+        return self.criterion(_output, _gt)
 
 
 """# Validate
@@ -153,14 +170,13 @@ def parse_args():
         "data_dir": "/work/b07502172/universal_adaptor/mels",
         "data_type": "npy",
         "config_dir": "./config",
-        "out_dir": "/home/b07502172/universal_adaptor/Acoustic-feature-converter/results",
-        "batch_size": 16,
+        "out_dir": "/work/b07502172/universal_adaptor/results",
+        'exp_name': 'resnet_config_resadd_outlay',
+        "batch_size": 32,
         "n_workers": 4,
         "segment_length": 200,
-        "valid_steps": 2000,
+        "valid_steps": 3500,
         "warmup_steps": 1000,
-        "save_steps": 10000,
-        "total_steps": 150000,
     }
 
     return config
@@ -171,13 +187,12 @@ def main(
     data_type,
     config_dir,
     out_dir,
+    exp_name,
     batch_size,
     n_workers,
     segment_length,
     valid_steps,
     warmup_steps,
-    total_steps,
-    save_steps,
 ):
     """Main function."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -187,11 +202,24 @@ def main(
     train_iterator = iter(train_loader)
     print(f"[Info]: Finish loading data!",flush = True)
 
-    model = Refiner_ResNet_with_config(n_channels=20, block='bottleneck', layers=[3, 4, 6, 3], groups=32, width_per_group=4).to(device)
-    criterion = nn.MSELoss()
+    save_steps = valid_steps * 2
+    total_steps = valid_steps * 100
+    model = Refiner_ResNet_with_config(
+        n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
+        block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
+    # model = Refiner_R2AttUNet_with_config(n_channels=20, t=2, layers=5, base=64, resadd=False).to(device)
+    criterion = nn.L1Loss().to(device)
     optimizer = AdamW(model.parameters(), lr=1e-3)
     scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
     print(f"[Info]: Finish creating model!",flush = True)
+
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    log_dir = os.path.join(out_dir, 'log', exp_name)
+    if not os.path.isdir(log_dir):
+        os.makedirs(log_dir)
+        os.chmod(log_dir, 0o775)
+    writer = SummaryWriter(log_dir)
 
     best_loss = 10000000
     best_state_dict = None
@@ -208,6 +236,7 @@ def main(
 
         loss = model_fn(batch, model, criterion, device)
         batch_loss = loss.item()
+        writer.add_scalar('training_loss', loss, step)
 
         # Update model
         loss.backward()
@@ -227,6 +256,7 @@ def main(
             pbar.close()
 
             valid_loss = valid(valid_loader, model, criterion, device)
+            writer.add_scalar('valid_loss', valid_loss, step)
 
             # keep the best model
             if valid_loss < best_loss:
@@ -237,9 +267,10 @@ def main(
 
         # Save the best model so far.
         if (step + 1) % save_steps == 0 and best_state_dict is not None:
-            if not os.path.exists(out_dir):
-                os.makedirs(out_dir)
-            save_path = os.path.join(out_dir, "model.ckpt")
+            ckpt_dir = os.path.join(out_dir, 'ckpts')
+            if not os.path.exists(ckpt_dir):
+                os.makedirs(ckpt_dir)
+            save_path = os.path.join(ckpt_dir, f"{exp_name}.ckpt")
             torch.save(best_state_dict, save_path)
             pbar.write(f"Step {step + 1}, best model saved. (loss={best_loss:.4f})")
 

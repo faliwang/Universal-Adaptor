@@ -25,8 +25,8 @@ def generate(config, data, extension, n_workers, outdir):
     ext = Extractor(cfg)
 
     # Search for files
-    f_list = [(ext, os.path.join(data, x), outdir) for x in os.listdir(data)
-              if x.endswith(extension)]
+    data_list = [os.path.join(data, x) for x in os.listdir(data) if x.endswith(extension)]
+    f_list = [(ext, x, outdir) for x in data_list]
     print(f'{len(f_list)} {extension[1:]} files found in {data}')
 
     # Extract

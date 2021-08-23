@@ -2,13 +2,15 @@
 
 import os
 import json
+
+from numpy.lib.arraysetops import isin
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
 from tqdm.notebook import tqdm
 
 from dataset import InferenceDataset
-from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config
+from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config, Refiner_ResNet_with_config
 
 
 def parse_args():
@@ -16,8 +18,8 @@ def parse_args():
     config = {
         "data_dir": "/work/b07502172/universal_adaptor/trial/mels/gt_trans",
         "config_dir": "./config",
-        "model_path": "/home/b07502172/universal_adaptor/Acoustic-feature-converter/results/model_unet_3layer_base32_resadd_config.ckpt",
-        "output_dir": "/home/b07502172/universal_adaptor/Acoustic-feature-converter/results/mels_save",
+        "model_path": "/work/b07502172/universal_adaptor/results/resnet_config_smoothl1.ckpt",
+        "output_dir": "/work/b07502172/universal_adaptor/results/mels_save/resnet_smoothl1",
         "num_workers": 4,
     }
 
@@ -48,7 +50,10 @@ def main(
     )
     print(f"[Info]: Finish loading data!",flush = True)
 
-    model = Refiner_UNet_with_config(n_channels=20, num_layers=3, base=32, bilinear=False, res_add=True).to(device)
+    # model = Refiner_UNet_with_config(n_channels=20, num_layers=3, base=16, bilinear=False, res_add=True).to(device)
+    model = Refiner_ResNet_with_config(
+        n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
+        block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
     model.load_state_dict(torch.load(model_path))
     model.eval()
     print(f"[Info]: Finish creating model!",flush = True)
@@ -65,7 +70,11 @@ def main(
         with torch.no_grad():
             mels = mels.to(device)
             cfg_tensors = cfg_tensors.to(device)
-            preds = model(mels, cfg_tensors).cpu().numpy()
+            preds = model(mels, cfg_tensors)
+            if isinstance(preds, list):
+                preds = preds[-1].cpu().numpy()
+            else:
+                preds = preds.cpu().numpy()
             for pred, model_name, input_name in zip(preds, model_names, input_names):
                 input_name = input_name[:-4]
                 if model_name.split('_')[-1] == 'wavernn':

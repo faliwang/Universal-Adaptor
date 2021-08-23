@@ -127,16 +127,18 @@ class AudioDataset(Dataset):
             start = random.randint(0, input_length - self.segment_len)
             # Get a segment with "segment_len" frames.
             input = input[:, start:start+self.segment_len]
-            gt = gt[:, start:start+self.segment_len]
+            if gt_length >= start+self.segment_len:
+                gt = gt[:, start:start+self.segment_len]
+            else:
+                gt = gt[:, start:]
         elif input_length < self.segment_len:
             input = F.pad(input, (0, self.segment_len - input_length))
-            gt = F.pad(gt, (0, self.segment_len - gt_length))
-        else:
-            if gt_length > self.segment_len:
-                gt = gt[:, :self.segment_len]
-            elif gt_length < self.segment_len:
-                gt = F.pad(gt, (0, self.segment_len - gt_length))    
-        assert gt.shape[-1] == self.segment_len, "gt length {} != segment_len {}".format(gt_length, self.segment_len)
+
+        if gt.shape[-1] > self.segment_len:
+            gt = gt[:, :self.segment_len]
+        elif gt.shape[-1] < self.segment_len:
+            gt = F.pad(gt, (0, self.segment_len - gt.shape[-1]))    
+        assert gt.shape[-1] == self.segment_len, "gt length {} != segment_len {}".format(gt.shape[-1], self.segment_len)
         assert input.shape[-1] == self.segment_len, "input length {} != segment_len {}".format(input.shape[-1], self.segment_len)
 
         return input, gt
@@ -204,7 +206,7 @@ def convert_config(config):
             elif param == "e":
                 cfg_list.append(math.exp(1))
             else:
-                if type(param) == int:
+                if type(param) == int or type(param) == float:
                     cfg_list.append(param)
                 else:
                     raise ValueError(f"We got unknown parameter in config: {param_name}: {param}")

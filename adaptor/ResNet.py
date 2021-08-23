@@ -108,7 +108,8 @@ class Bottleneck(nn.Module):
         groups: int = 1,
         base_width: int = 64,
         dilation: int = 1,
-        norm_layer: Optional[Callable[..., nn.Module]] = None
+        norm_layer: Optional[Callable[..., nn.Module]] = None,
+        resadd: bool = False,
     ):
         super(Bottleneck, self).__init__()
         if norm_layer is None:
@@ -130,6 +131,7 @@ class Bottleneck(nn.Module):
         self.bn6 = norm_layer(inplanes)
         self.downsample = downsample
         self.stride = stride
+        self.resadd = resadd
 
     def forward(self, x: Tensor):
         identity = x
@@ -138,32 +140,34 @@ class Bottleneck(nn.Module):
         out = self.bn1(out)
         out = self.relu(out)
 
-        out = self.conv2(out)
-        out = self.bn2(out)
-        out = self.relu(out)
+        out1 = self.conv2(out)
+        out1 = self.bn2(out1)
+        out1 = self.relu(out1)
 
-        out = self.conv3(out)
-        out = self.bn3(out)
-        out = self.relu(out)
+        out2 = self.conv3(out1)
+        out2 = self.bn3(out2)
+        out2 = self.relu(out2)
 
-        out = self.transconv1(out)
-        out = self.bn4(out)
-        out = self.relu(out)
+        out3 = self.transconv1(out2)
+        out3 = self.bn4(out3)
+        out3 = self.relu(out3)
+        if self.resadd: out3 = out3 + out1
 
-        out = self.transconv2(out)
-        out = self.bn5(out)
-        out = self.relu(out)
+        out4 = self.transconv2(out3)
+        out4 = self.bn5(out4)
+        out4 = self.relu(out4)
+        if self.resadd: out4 = out4 + out
 
-        out = self.transconv3(out)
-        out = self.bn6(out)
+        out5 = self.transconv3(out4)
+        out5 = self.bn6(out5)
 
         # if self.downsample is not None:
         #     identity = self.downsample(x)
 
-        out += identity
-        out = self.relu(out)
+        out5 = self.relu(out5)
+        out5 = out5 + identity
 
-        return out
+        return out5
 
 
 class ResNet(nn.Module):
@@ -173,6 +177,9 @@ class ResNet(nn.Module):
         input_chan: int,
         block: Type[Union[BasicBlock, Bottleneck]],
         layers: List[int],
+        planes: List[int],
+        block_resadd: bool = False,
+        output_layer: bool = False,
         zero_init_residual: bool = False,
         groups: int = 1,
         width_per_group: int = 64,
@@ -187,28 +194,35 @@ class ResNet(nn.Module):
         self.input_chan = input_chan
         self.inplanes = 64
         self.dilation = 1
+        self.planes = planes
+        self.layers = layers
+        self.output_layer = output_layer
         if replace_stride_with_dilation is None:
             # each element in the tuple indicates if we should replace
             # the 2x2 stride with a dilated convolution instead
-            replace_stride_with_dilation = [False, False, False]
+            replace_stride_with_dilation = [False for _ in range(len(layers))]
         if len(replace_stride_with_dilation) != 3:
             raise ValueError("replace_stride_with_dilation should be None "
                              "or a 3-element tuple, got {}".format(replace_stride_with_dilation))
         self.groups = groups
         self.base_width = width_per_group
-        self.conv1 = nn.Conv2d(self.input_chan, self.inplanes, kernel_size=7, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(self.input_chan, self.inplanes, kernel_size=7, stride=1, padding=3,
                                bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(block, 64, layers[0])
-        self.layer2 = self._make_layer(block, 128, layers[1], stride=2,
-                                       dilate=replace_stride_with_dilation[0])
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2,
-                                       dilate=replace_stride_with_dilation[1])
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
-                                       dilate=replace_stride_with_dilation[2])
-        self.trans_conv1 = nn.ConvTranspose2d(self.inplanes, self.input_chan, kernel_size=7, stride=2, padding=3, output_padding=1,
+        assert len(planes) == len(layers), f'The len of planes {planes} and layers {layers} should be the same'
+        self.layers = nn.ModuleList(
+            [self._make_layer(block, planes[i], layers[i], resadd=block_resadd, stride=1, dilate=replace_stride_with_dilation[i]) for i in range(len(layers))]
+        )
+        # self.layer1 = self._make_layer(block, 64, layers[0])
+        # self.layer2 = self._make_layer(block, 64, layers[1], stride=1,
+        #                                dilate=replace_stride_with_dilation[0])
+        # self.layer3 = self._make_layer(block, 128, layers[2], stride=1,
+        #                                dilate=replace_stride_with_dilation[1])
+        # self.layer4 = self._make_layer(block, 128, layers[3], stride=1,
+        #                                dilate=replace_stride_with_dilation[2])
+        self.trans_conv1 = nn.ConvTranspose2d(self.inplanes, self.input_chan, kernel_size=7, stride=1, padding=3,
                                bias=False)
         self.bn2 = norm_layer(self.input_chan)
 
@@ -230,7 +244,7 @@ class ResNet(nn.Module):
                     nn.init.constant_(m.bn2.weight, 0)  # type: ignore[arg-type]
 
     def _make_layer(self, block: Type[Union[BasicBlock, Bottleneck]], planes: int, blocks: int,
-                    stride: int = 1, dilate: bool = False):
+                    resadd: bool = False, stride: int = 1, dilate: bool = False):
         norm_layer = self._norm_layer
         downsample = None
         previous_dilation = self.dilation
@@ -245,12 +259,12 @@ class ResNet(nn.Module):
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, previous_dilation, norm_layer))
+                            self.base_width, previous_dilation, norm_layer, resadd))
         # self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes, groups=self.groups,
                                 base_width=self.base_width, dilation=self.dilation,
-                                norm_layer=norm_layer))
+                                norm_layer=norm_layer, resadd=resadd))
 
         return nn.Sequential(*layers)
 
@@ -261,15 +275,23 @@ class ResNet(nn.Module):
         x = self.relu(x)
         # x = self.maxpool(x)
 
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        Xs = []
+        for i in range(len(self.layers)):
+            x = self.layers[i](x)
+            if self.output_layer and i != len(self.layers) - 1:
+                _x = self.trans_conv1(x)
+                _x = self.bn2(_x)
+                Xs.append(_x)
+        # x = self.layer1(x)
+        # x = self.layer2(x)
+        # x = self.layer3(x)
+        # x = self.layer4(x)
 
         x = self.trans_conv1(x)
         x = self.bn2(x)
+        Xs.append(x)
 
-        return x
+        return Xs
 
     def forward(self, x: Tensor):
         return self._forward_impl(x)
