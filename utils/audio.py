@@ -34,11 +34,16 @@ def linear_to_mel(S, wav_config, spec_config):
             fmin=spec_config["fmin"], fmax=spec_config["fmax"])
 
 
-def mel_to_linear(S, wav_config, spec_config):
-    return librosa.feature.inverse.mel_to_stft(
-            S, sr=wav_config["sample_rate"],
-            power=1, n_fft=spec_config["n_fft"],
-            fmin=spec_config["fmin"], fmax=spec_config["fmax"])
+def inv_mel_basis(wav_config, spec_config):
+    mel_basis = librosa.filters.mel(
+			wav_config["sample_rate"], spec_config["n_fft"],
+			n_mels=spec_config["num_mels"], fmin = spec_config["fmin"],
+			fmax = spec_config["fmax"])
+    return np.linalg.pinv(mel_basis)
+
+def mel_to_linear(S, inv_mel_basis):
+    inverse = np.dot(inv_mel_basis, S)
+    return np.maximum(1e-10, inverse)
 
 
 def amp_to_db(S, post_config):

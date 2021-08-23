@@ -44,7 +44,10 @@ class Extractor:
                 S = audio.denormalize(S, self.post_config)
             S = audio.db_to_amp(S, self.post_config)
         if self.spec_config["mel_spec"]:
-            S = audio.mel_to_linear(S, self.wav_config, self.spec_config)
+            if not hasattr(self, 'inv_mel_basis'):
+                self.inv_mel_basis = audio.inv_mel_basis(
+                        self.wav_config, self.spec_config)
+            S = audio.mel_to_linear(S, self.inv_mel_basis)
         S = audio.stft_depower(S, self.spec_config["stft_power"])
         y = audio.stft_to_wav(S, self.spec_config, n_iter)
         if self.spec_config["preemphasis"] is not None:
