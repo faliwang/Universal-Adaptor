@@ -171,7 +171,7 @@ def parse_args():
         "data_type": "npy",
         "config_dir": "./config",
         "out_dir": "/work/b07502172/universal_adaptor/results",
-        'exp_name': 'resnet_config_resadd_outlay',
+        'exp_name': 'r2attunet_no_resadd',
         "batch_size": 32,
         "n_workers": 4,
         "segment_length": 200,
@@ -195,6 +195,7 @@ def main(
     warmup_steps,
 ):
     """Main function."""
+    print(f"[Info]: Doing {exp_name} experiment!")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[Info]: Use {device} now!")
 
@@ -204,10 +205,14 @@ def main(
 
     save_steps = valid_steps * 2
     total_steps = valid_steps * 100
-    model = Refiner_ResNet_with_config(
-        n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
-        block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
-    # model = Refiner_R2AttUNet_with_config(n_channels=20, t=2, layers=5, base=64, resadd=False).to(device)
+    # model = Refiner_ResNet_with_config(
+    #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
+    #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
+    model = Refiner_R2AttUNet_with_config(n_channels=20, t=2, layers=5, base=64, resadd=False).to(device)
+    ckpt_file = os.path.join(out_dir, 'ckpts', f"{exp_name}.ckpt")
+    if os.path.isfile(ckpt_file):
+        model.load_state_dict(torch.load(ckpt_file))
+        print("[Info]: Load model checkpoint!",flush = True)
     criterion = nn.L1Loss().to(device)
     optimizer = AdamW(model.parameters(), lr=1e-3)
     scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)

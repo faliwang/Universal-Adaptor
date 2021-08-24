@@ -17,8 +17,8 @@ class Extractor:
             y = self.wav_config["peak_norm"]*y/np.abs(y).max()
         if np.abs(y).max() > 1:
             y = y/np.abs(y).max()
-        if self.wav_config["trim_silence_threshold_in_db"] is not None:
-            pass
+        if self.wav_config["trim_silence"]:
+            y = audio.trim_silence(y, self.wav_config)
         return y
 
     def save(self, y, path):

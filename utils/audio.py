@@ -13,10 +13,22 @@ def save_wav(y, path, sample_rate):
     wavfile.write(path, sample_rate, y.astype(np.int16))
 
 
+def trim_silence(y, wav_config):
+    return librosa.effects.trim(
+                y,
+                top_db=wav_config["trim_silence_threshold_in_db"],
+                frame_length=wav_config["trim_frame_size"],
+                hop_length=wav_config["trim_hop_size"],
+            )[0]
+
+
 def stft(y, spec_config):
+    y = np.pad(y, [(spec_config["left_pad"],spec_config["right_pad"])], mode=spec_config["pad_mode"])
     return librosa.stft(y, n_fft=spec_config["n_fft"],
                         hop_length=spec_config["hop_length"],
-                        win_length=spec_config["win_length"])
+                        win_length=spec_config["win_length"],
+                        window=spec_config["window"],
+                        center=spec_config["center"])
 
 
 def stft_power(S, stft_power):
@@ -87,6 +99,10 @@ def denormalize(S, post_config):
 
 
 def stft_to_wav(S, spec_config, n_iter):
-    return librosa.griffinlim(
+    audio = librosa.griffinlim(
             S, n_iter=n_iter, hop_length=spec_config["hop_length"],
-            win_length=spec_config["win_length"])
+            win_length=spec_config["win_length"], window=spec_config["window"], center=spec_config["center"])
+    audio = audio[spec_config["left_pad"]:]
+    if spec_config["right_pad"] > 0:
+        audio = audio[: -1 * spec_config["right_pad"]]
+    return audio

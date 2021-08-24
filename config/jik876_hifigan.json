@@ -1,6 +1,6 @@
 {
-    "github_repo": "https://github.com/NVIDIA/waveglow",
-    "commit": "8afb643df59265016af6bd255c7516309d675168",
+    "github_repo": "https://github.com/jik876/hifi-gan",
+    "commit": "4769534d45265d52a904b850da5a622601885777",
     "wav_config": {
         "sample_rate": 22050,
         "normalize_loudness": null,
@@ -16,10 +16,10 @@
         "hop_length": 256,
         "win_length": 1024,
         "window": "hann",
-        "left_pad": 0,
-        "right_pad": 0,
+        "left_pad": 384,
+        "right_pad": 384,
         "pad_mode": "reflect",
-        "center": true,
+        "center": false,
         "stft_power": 1,
         "mel_spec": true,
         "num_mels": 80,

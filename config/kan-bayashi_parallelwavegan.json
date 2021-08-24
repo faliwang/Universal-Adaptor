@@ -5,13 +5,21 @@
         "sample_rate": 22050,
         "normalize_loudness": null,
         "peak_norm": null,
-        "trim_silence_threshold_in_db": null
+        "trim_silence": true,
+        "trim_silence_threshold_in_db": 60,
+        "trim_frame_size": 2048,
+        "trim_hop_size": 512
     },
     "spec_config": {
         "preemphasis": null,
         "n_fft": 1024,
         "hop_length": 256,
         "win_length": 1024,
+        "window": "hann",
+        "left_pad": 0,
+        "right_pad": 0,
+        "pad_mode": "reflect",
+        "center": true,
         "stft_power": 1,
         "mel_spec": true,
         "num_mels": 80,

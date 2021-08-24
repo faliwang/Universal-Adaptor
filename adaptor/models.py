@@ -102,7 +102,7 @@ class Refiner_R2AttUNet_with_config(nn.Module):
         config = torch.unsqueeze(config, -1)
         config = config.repeat(1, 1, num_mels, length)
         input_u = torch.cat([input_w, config], 1)
-        output = self.unet(input_u) + input_w
+        output = self.unet(input_u)
         output = torch.squeeze(output, 1)
         assert input.size() == output.size(), "shape should be same after refine: input {} & output {}".format(input.size(), output.size())
         return output
