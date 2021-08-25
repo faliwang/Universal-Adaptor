@@ -15,7 +15,7 @@ from tensorboardX import SummaryWriter
  
 
 from dataset import AudioDataset
-from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config, Refiner_ResNet_with_config, Refiner_R2AttUNet_with_config
+import adaptor
 
 
 def get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length):
@@ -171,7 +171,7 @@ def parse_args():
         "data_type": "npy",
         "config_dir": "./config",
         "out_dir": "/work/b07502172/universal_adaptor/results",
-        'exp_name': 'r2attunet_no_resadd',
+        'exp_name': 'r2attunet_config',
         "batch_size": 32,
         "n_workers": 4,
         "segment_length": 200,
@@ -208,14 +208,14 @@ def main(
     # model = Refiner_ResNet_with_config(
     #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
     #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
-    model = Refiner_R2AttUNet_with_config(n_channels=20, t=2, layers=5, base=64, resadd=False).to(device)
+    model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
     ckpt_file = os.path.join(out_dir, 'ckpts', f"{exp_name}.ckpt")
     if os.path.isfile(ckpt_file):
         model.load_state_dict(torch.load(ckpt_file))
         print("[Info]: Load model checkpoint!",flush = True)
     criterion = nn.L1Loss().to(device)
     optimizer = AdamW(model.parameters(), lr=1e-3)
-    scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
+    # scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
     print(f"[Info]: Finish creating model!",flush = True)
 
     if not os.path.exists(out_dir):
@@ -246,7 +246,7 @@ def main(
         # Update model
         loss.backward()
         optimizer.step()
-        scheduler.step()
+        # scheduler.step()
         optimizer.zero_grad()
         
         # Log

@@ -97,6 +97,32 @@ class RRCNN_block(nn.Module):
         return x+x1
 
 
+class RRCNN_block_config(nn.Module):
+    def __init__(self,ch_in,ch_out,config_len,t=2):
+        super(RRCNN_block_config,self).__init__()
+        self.RCNN = nn.Sequential(
+            Recurrent_block(ch_out,t=t),
+            Recurrent_block(ch_out,t=t)
+        )
+        self.Conv_1x1 = nn.Sequential(
+            nn.Conv2d(ch_in,ch_out,kernel_size=1,stride=1,padding=0),
+            nn.BatchNorm2d(ch_out),
+            nn.ReLU()
+        )
+        self.cond_a = nn.Linear(config_len, ch_out)
+        self.cond_b = nn.Linear(config_len, ch_out)
+        self.cond_nl = nn.PReLU(num_parameters=1, init=0.25)
+
+    def forward(self,x,config):
+        x = self.Conv_1x1(x)
+        Batch = config.size(0)
+        Ca = self.cond_a(config).view(Batch,-1,1,1)
+        Cb = self.cond_b(config).view(Batch,-1,1,1)
+        x = self.cond_nl(Ca * x + Cb)
+        x1 = self.RCNN(x)
+        return x+x1
+
+
 class single_conv(nn.Module):
     def __init__(self,ch_in,ch_out):
         super(single_conv,self).__init__()
@@ -404,6 +430,65 @@ class R2AttU_Net(nn.Module):
             else:
                 x = torch.cat((x,_x),dim=1)
             x = self.Up_RRCNN_layers[i](x)
+
+        x = self.Conv_1x1(x)
+
+        return x
+
+
+class R2AttU_Net_config(nn.Module):
+    def __init__(self,img_ch=3,output_ch=1,config_len=20,t=2,layers=5,base=64,resadd=False):
+        super(R2AttU_Net_config,self).__init__()
+        self.layers = layers
+        self.resadd = resadd
+        
+        self.Maxpool = nn.MaxPool2d(kernel_size=2,stride=2)
+        self.Upsample = nn.Upsample(scale_factor=2)
+
+        self.inc = RRCNN_block_config(ch_in=img_ch,ch_out=64,config_len=config_len,t=t)
+
+        self.RRCNN_layers = nn.ModuleList(
+            [RRCNN_block_config(ch_in=base*(2**i), ch_out=base*2*(2**i), config_len=config_len, t=t) for i in range(layers-1)]
+        )
+
+        self.Up_layers = nn.ModuleList(
+            [up_conv(ch_in=base*(2**i),ch_out=base//2*(2**i)) for i in range(layers-1, 0, -1)]
+        )
+
+        self.Att_layers = nn.ModuleList(
+            [Attention_block(F_g=base*(2**i)//2, F_l=base*(2**i)//2, F_int=base*(2**i)//4) for i in range(layers-1, 0, -1)]
+        )
+
+        factor = 2 if resadd else 1
+        self.Up_RRCNN_layers = nn.ModuleList(
+            [RRCNN_block_config(ch_in=base*(2**i)//factor, ch_out=base//2*(2**i), config_len=config_len, t=t) for i in range(layers-1, 0, -1)]
+        )
+
+        self.Conv_1x1 = nn.Conv2d(base,output_ch,kernel_size=1,stride=1,padding=0)
+
+
+    def forward(self,x,config):
+        # encoding path
+        Xs = []
+        x = self.inc(x, config)
+        Xs.append(x)
+        for i in range(self.layers-1):
+            x = self.Maxpool(x)
+            x = self.RRCNN_layers[i](x, config)
+            if i != self.layers-2:
+                Xs.append(x)
+
+        # decoding + concat path
+
+        for i in range(self.layers-1):
+            _x = Xs[self.layers-2-i]
+            x = self.Up_layers[i](x, _x)
+            x = self.Att_layers[i](g=x, x=_x)
+            if self.resadd:
+                x = x + _x
+            else:
+                x = torch.cat((x,_x),dim=1)
+            x = self.Up_RRCNN_layers[i](x, config)
 
         x = self.Conv_1x1(x)
 

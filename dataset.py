@@ -197,9 +197,15 @@ def convert_config(config):
     post_cfg = config["post_config"]
     post_cfg = list(sorted(post_cfg.items()))
     cfg_list = []
+    window_dict = {'hann': 1, None: 0}
+    pad_mode_dict = {'reflect': 1, None: 0}
     for config in [wav_cfg, spec_cfg, post_cfg]:
         for param_name, param in config:
-            if param == True:
+            if param_name == 'window':
+                cfg_list.append(window_dict[param])
+            elif param_name == 'pad_mode':
+                cfg_list.append(pad_mode_dict[param])
+            elif param == True:
                 cfg_list.append(1)
             elif param == None or param == False:
                 cfg_list.append(0)

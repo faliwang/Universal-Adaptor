@@ -5,7 +5,7 @@ import numpy as np
 from .unet import UNet
 from .transformer.Layers import FFTBlock
 from .ResNet import ResNet, BasicBlock, Bottleneck
-from .R2AttU_Net import R2AttU_Net
+from .R2AttU_Net import R2AttU_Net, R2AttU_Net_config
 
 class Refiner_UNet(nn.Module):
     def __init__(self, n_channels=1, num_layers=4, base=16, bilinear=True, res_add=False):
@@ -84,6 +84,28 @@ class Refiner_ResNet_with_config(nn.Module):
 
 
 class Refiner_R2AttUNet_with_config(nn.Module):
+    def __init__(self, 
+        n_channels=1, 
+        config_len=27,
+        t=2,
+        layers=5, 
+        base=64,
+        resadd=False, 
+    ):
+        super().__init__()
+        self.unet = R2AttU_Net_config(img_ch=n_channels,output_ch=1,config_len=config_len,t=t,layers=layers,base=base,resadd=resadd)
+    
+    def forward(self, input, config):
+        batch, num_mels, length = input.shape
+        input_w = torch.unsqueeze(input, 1)
+        # B * chan * n_mels * len
+        output = self.unet(input_w, config) + input_w
+        output = torch.squeeze(output, 1)
+        assert input.size() == output.size(), "shape should be same after refine: input {} & output {}".format(input.size(), output.size())
+        return output
+
+
+class Refiner_R2AttUNet(nn.Module):
     def __init__(self, 
         n_channels=1, 
         t=2,
