@@ -10,7 +10,7 @@ import numpy as np
 import torch.nn.functional as F
 from torch.utils.data import Dataset
 from extract import Extractor
-from itertools import permutations
+from itertools import product
 
 
 class AudioDataset(Dataset):
@@ -25,7 +25,7 @@ class AudioDataset(Dataset):
         
         self.configs = get_configs(config_dir)
         self.extractors = [Extractor(config) for config, _ in self.configs]
-        perms = permutations(range(len(self.configs)), 2)
+        perms = product(range(len(self.configs)), repeat=2)
         self.perms = list(perms)
         self.segment_len = segment_len
  
@@ -177,16 +177,71 @@ def get_configs(config_dir):
     """
         return list: [(config(dict), config_name)]
     """
-    config_dir = os.path.abspath(config_dir)
-    config_paths = os.listdir(config_dir)
-    config_paths.sort()
-    configs = []
-    for config_path in config_paths:
-        config_name = config_path[:-5].split('_')[-1]
-        with open(os.path.join(config_dir, config_path), 'r') as f:
-            config = json.load(f)
-            configs.append((config, config_name))
+    if config_dir != None:
+        config_dir = os.path.abspath(config_dir)
+        config_paths = os.listdir(config_dir)
+        config_paths.sort()
+        configs = []
+        for config_path in config_paths:
+            config_name = config_path[:-5].split('_')[-1]
+            with open(os.path.join(config_dir, config_path), 'r') as f:
+                config = json.load(f)
+                configs.append((config, config_name))
+    else:
+        rand_config_1 = generate_config()
+        rand_config_2 = generate_config()
+        rand_config_3 = generate_config()
+        configs = [(rand_config_1, 'random1'), (rand_config_2, 'random2'), (rand_config_3, 'random3')]
     return configs
+
+
+def generate_config():
+    trim_p = 0.2
+    fmin_p = 0.4
+    fmax_p = 0.4
+    
+    # generate wav config
+    peak_norm = random.uniform(0.9, 1.0)
+    wav_config = {"sample_rate": 22050, "normalize_loudness": None, "peak_norm": peak_norm}
+    trim = {"trim_silence": True, "trim_silence_threshold_in_db": 60, "trim_frame_size": 2048, "trim_hop_size": 512}
+    trim_not = {"trim_silence": False, "trim_silence_threshold_in_db": 0, "trim_frame_size": 0, "trim_hop_size": 0}
+    trim_silence = random.choices([trim, trim_not], weights=[trim_p, 1-trim_p])[0]
+    wav_config.update(trim_silence)
+
+    # generate spec config
+    n_fft = random.choice([512, 1024, 2048])
+    center = random.choice([True, False])
+    pad = 0 if center else n_fft * 3 // 8
+    fmin = random.choices([0, 20, 40], weights=[fmin_p, 1-2*fmin_p, fmin_p])[0]
+    fmax = random.choices([8000, None], weights=[fmax_p, 1-fmax_p])[0]
+    spec_config = {
+        "preemphasis": None,
+        "n_fft": n_fft, "hop_length": n_fft // 4, "win_length": n_fft, "window": "hann",
+        "left_pad": pad, "right_pad": pad, "pad_mode": "reflect",  "center": center,
+        "stft_power": 1,
+        "mel_spec": True,
+        "num_mels": 80, "fmin": fmin, "fmax": fmax
+    }
+
+    # generate post config
+    log_base = random.choice([10, 'e'])
+    log_factor = random.choice([20, 1])
+    normalize_spec = random.choice([True, False])
+    post_config = {
+        "amp_to_db": True,
+        "log_base": log_base,
+        "log_factor": log_factor,
+        "normalize_spec": normalize_spec,
+        "ref_level_db": 0,
+        "min_level_db": -100
+    }
+
+    config = {}
+    config['wav_config'] = wav_config
+    config['spec_config'] = spec_config
+    config['post_config'] = post_config
+    config['github_repo'] = None
+    return config
 
 
 def convert_config(config):

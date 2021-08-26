@@ -175,7 +175,7 @@ def parse_args():
         "batch_size": 32,
         "n_workers": 4,
         "segment_length": 200,
-        "valid_steps": 3500,
+        "valid_steps": 3600,
         "warmup_steps": 1000,
     }
 
@@ -232,6 +232,12 @@ def main(
     pbar = tqdm(total=valid_steps, ncols=0, desc="Train", unit=" step")
 
     for step in range(total_steps):
+        # change data
+        if (step + 1) % valid_steps == 1 and step != 0 and data_type == 'wav' and config_dir == None:
+            train_loader, valid_loader = get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length)
+            train_iterator = iter(train_loader)
+            print(f"[Info]: Finish Reloading data!",flush = True)
+            
         # Get data
         try:
             batch = next(train_iterator)

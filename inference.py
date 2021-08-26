@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from tqdm.notebook import tqdm
 
 from dataset import InferenceDataset
-from adaptor.models import Refiner_UNet, Refiner_FFT, Refiner_UNet_with_config, Refiner_ResNet_with_config, Refiner_R2AttUNet_with_config
+import adaptor
 
 
 def parse_args():
@@ -18,8 +18,8 @@ def parse_args():
     config = {
         "data_dir": "/work/b07502172/universal_adaptor/trial/mels/gt_trans",
         "config_dir": "./config",
-        "model_path": "/work/b07502172/universal_adaptor/results/ckpts/r2attunet.ckpt",
-        "output_dir": "/work/b07502172/universal_adaptor/results/mels_save/r2attunet",
+        "exp_name": 'r2attunet_config',
+        "out_dir": "/work/b07502172/universal_adaptor/results",
         "num_workers": 4,
     }
 
@@ -29,8 +29,8 @@ def parse_args():
 def main(
     data_dir,
     config_dir,
-    model_path,
-    output_dir,
+    exp_name,
+    out_dir,
     num_workers,
 ):
     """Main function."""
@@ -54,11 +54,13 @@ def main(
     # model = Refiner_ResNet_with_config(
     #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
     #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
-    model = Refiner_R2AttUNet_with_config(n_channels=20, t=2, layers=5, base=64, resadd=False).to(device)
+    model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
+    model_path = os.path.join(out_dir, 'ckpts', f'{exp_name}.ckpt')
     model.load_state_dict(torch.load(model_path))
     model.eval()
     print(f"[Info]: Finish creating model!",flush = True)
 
+    output_dir = os.path.join(out_dir, 'mels_save', exp_name)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     model_dirs = {}
