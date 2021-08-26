@@ -15,7 +15,7 @@ from rand_prep import rand_config
 
 
 class AudioDataset(Dataset):
-    def __init__(self, data_dir, , config_dir, segment_len=128):
+    def __init__(self, data_dir, data_type, config_dir, segment_len=128):
         self.data_dir = data_dir
         self.files = self.get_wav_npy_files(config_dir)
         self.src_cfgs = {
