@@ -1,5 +1,6 @@
 """ Full assembly of the parts to form the complete network """
 
+from dataset import convert_config
 import torch.nn.functional as F
 import torch.nn as nn
 
@@ -60,4 +61,40 @@ class UNet(nn.Module):
         # x = self.up3(x, x2)
         # x = self.up4(x, x1)
         # logits = self.outc(x)
+        return logits
+
+
+class UNet_affine(nn.Module):
+    def __init__(self, n_channels, config_len, num_layers=4, base=16, bilinear=True, res_add=False):
+        super(UNet_affine, self).__init__()
+        self.n_channels = n_channels
+        self.config_len = config_len
+        self.bilinear = bilinear
+        self.res_add = res_add
+        self.num_layers = num_layers
+
+        self.inc = DoubleConv_affine(n_channels, base, config_len)
+        self.down_layers = nn.ModuleList(
+            [Down_affine(base*(2**i), base*2*(2**i), config_len) for i in range(num_layers-1)]
+        )
+        factor = 2 if bilinear else 1
+        self.final_down = Down_affine(base//2 *(2**num_layers), base*(2**num_layers) // factor, config_len)
+        self.up_layers = nn.ModuleList(
+            [Up_affine(base*(2**i), base//2*(2**i) // factor, config_len, bilinear, res_add) for i in range(num_layers, 1, -1)]
+        )
+        self.final_up = Up_affine(base*2, base, config_len, bilinear, res_add)
+        self.outc = OutConv_affine(base, n_channels, config_len)
+
+    def forward(self, x, config):
+        x_list = []
+        x = self.inc(x, config)
+        x_list.append(x)
+        for i in range(self.num_layers-1):
+            x = self.down_layers[i](x, config)
+            x_list.append(x)
+        x_up = self.final_down(x, config)
+        for i in range(self.num_layers-1):
+            x_up = self.up_layers[i](x_up, x_list[self.num_layers-1-i], config)
+        x_up = self.final_up(x_up, x_list[0], config)
+        logits = self.outc(x_up, config)
         return logits

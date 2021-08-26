@@ -171,7 +171,7 @@ def parse_args():
         "data_type": "npy",
         "config_dir": "./config",
         "out_dir": "/work/b07502172/universal_adaptor/results",
-        'exp_name': 'r2attunet_config',
+        'exp_name': 'unet_affine',
         "batch_size": 32,
         "n_workers": 4,
         "segment_length": 200,
@@ -208,7 +208,8 @@ def main(
     # model = Refiner_ResNet_with_config(
     #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
     #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
-    model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
+    # model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
+    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=27, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
     ckpt_file = os.path.join(out_dir, 'ckpts', f"{exp_name}.ckpt")
     if os.path.isfile(ckpt_file):
         model.load_state_dict(torch.load(ckpt_file))

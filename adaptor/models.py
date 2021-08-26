@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from .unet import UNet
+from .unet import UNet, UNet_affine
 from .transformer.Layers import FFTBlock
 from .ResNet import ResNet, BasicBlock, Bottleneck
 from .R2AttU_Net import R2AttU_Net, R2AttU_Net_config
@@ -39,6 +39,21 @@ class Refiner_UNet_with_config(nn.Module):
         input_u = torch.cat([input_w, config], 1)
         output = self.unet(input_u)
         output = self.conv(output) + input_w
+        output = torch.squeeze(output, 1)
+        assert input.size() == output.size(), "shape should be same after refine: input {} & output {}".format(input.size(), output.size())
+        return output
+
+
+class Refiner_UNet_affine(nn.Module):
+    def __init__(self, n_channels=1, config_len=27, num_layers=4, base=16, bilinear=True, res_add=False):
+        super().__init__()
+        self.unet = UNet_affine(n_channels=n_channels, config_len=config_len, num_layers=num_layers, base=base, bilinear=bilinear, res_add=res_add)
+    
+    def forward(self, input, config):
+        batch, num_mels, length = input.shape
+        input_w = torch.unsqueeze(input, 1)
+        # B * chan * n_mels * len
+        output = self.unet(input_w, config) + input_w
         output = torch.squeeze(output, 1)
         assert input.size() == output.size(), "shape should be same after refine: input {} & output {}".format(input.size(), output.size())
         return output
