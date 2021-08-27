@@ -222,9 +222,9 @@ def generate_config():
 
     # generate post config
     log_base = random.choice([10, 'e'])
-    log_factor = random.choice([20, 1])
-    normalize_spec = True if log_factor == 20\
-        else random.choice([True, False])
+    log_factor = random.choice([20, 1])\
+        if log_base == 10 else 1
+    normalize_spec = log_factor == 20
     post_config = {
         "amp_to_db": True,
         "log_base": log_base,
