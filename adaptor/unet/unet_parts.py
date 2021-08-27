@@ -172,10 +172,6 @@ class OutConv_affine(nn.Module):
         super(OutConv_affine, self).__init__()
         self.cond_a = nn.Linear(config_len, in_channels)
         self.cond_b = nn.Linear(config_len, in_channels)
-        self.cond_a.weight.data.fill_(0)
-        self.cond_a.bias.data.fill_(0)
-        self.cond_b.weight.data.fill_(0)
-        self.cond_b.bias.data.fill_(0)
         self.cond_nl = nn.PReLU(num_parameters=1, init=0.25)
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1)
 
