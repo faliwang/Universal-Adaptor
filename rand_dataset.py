@@ -22,7 +22,7 @@ class AudioDataset(Dataset):
             idx:cfg for cfg, idx in get_configs(config_dir+'/config')}
         self.src_exts = {
             idx:Extractor(self.src_cfgs[idx]) for idx in self.src_cfgs}
-        self.tgt_cfgs = [generate_config() for _ in range(len(self.src_cfgs))]
+        self.tgt_cfgs = [generate_config() for _ in range(100)]
         self.tgt_exts = [Extractor(cfg) for cfg in self.tgt_cfgs]
         self.segment_len = segment_len
 
