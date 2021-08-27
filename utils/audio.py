@@ -39,22 +39,23 @@ def stft_depower(S, stft_power):
     return np.power(S, 1/stft_power)
 
 
-def linear_to_mel(S, wav_config, spec_config):
-    return librosa.feature.melspectrogram(
-            S=S, sr=wav_config["sample_rate"], power=1,
-            n_fft=spec_config["n_fft"], n_mels=spec_config["num_mels"],
-            fmin=spec_config["fmin"], fmax=spec_config["fmax"])
+def mel_basis(wav_config, spec_config):
+    return librosa.filters.mel(
+            sr=wav_config["sample_rate"], n_fft=spec_config["n_fft"],
+            n_mels=spec_config["num_mels"], fmin=spec_config["fmin"],
+            fmax=spec_config["fmax"])
 
 
-def inv_mel_basis(wav_config, spec_config):
-    mel_basis = librosa.filters.mel(
-			wav_config["sample_rate"], spec_config["n_fft"],
-			n_mels=spec_config["num_mels"], fmin = spec_config["fmin"],
-			fmax = spec_config["fmax"])
+def inv_mel_basis(mel_basis):
     return np.linalg.pinv(mel_basis)
 
+
+def linear_to_mel(S, mel_basis):
+    return np.einsum('ij,jk->ik', mel_basis, S)
+
+
 def mel_to_linear(S, inv_mel_basis):
-    inverse = np.dot(inv_mel_basis, S)
+    inverse = np.einsum('ij,jk->ik', inv_mel_basis, S)
     return np.maximum(1e-10, inverse)
 
 

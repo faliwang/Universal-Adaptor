@@ -8,6 +8,9 @@ class Extractor:
         self.spec_config = config["spec_config"]
         self.post_config = config["post_config"]
         self.github_repo = config["github_repo"]
+        self.mel_basis = audio.mel_basis(
+                        self.wav_config, self.spec_config)
+        self.inv_mel_basis = audio.inv_mel_basis(self.mel_basis)
 
     def load(self, path):
         y = audio.load_wav(path, self.wav_config["sample_rate"])
@@ -31,7 +34,7 @@ class Extractor:
         S = np.abs(D)
         S = audio.stft_power(S, self.spec_config["stft_power"])
         if self.spec_config["mel_spec"]:
-            S = audio.linear_to_mel(S, self.wav_config, self.spec_config)
+            S = audio.linear_to_mel(S, self.mel_basis)
         if self.post_config["amp_to_db"]:
             S = audio.amp_to_db(S, self.post_config)
             if self.post_config["normalize_spec"]:
@@ -44,9 +47,6 @@ class Extractor:
                 S = audio.denormalize(S, self.post_config)
             S = audio.db_to_amp(S, self.post_config)
         if self.spec_config["mel_spec"]:
-            if not hasattr(self, 'inv_mel_basis'):
-                self.inv_mel_basis = audio.inv_mel_basis(
-                        self.wav_config, self.spec_config)
             S = audio.mel_to_linear(S, self.inv_mel_basis)
         S = audio.stft_depower(S, self.spec_config["stft_power"])
         y = audio.stft_to_wav(S, self.spec_config, n_iter)
