@@ -5,54 +5,8 @@ import argparse
 import numpy as np
 from tqdm import tqdm
 from extract import Extractor
+from dataset import generate_config
 from multiprocessing import Pool, cpu_count
-
-
-def rand_config():
-    trim_p = 0.2
-    fmin_p = 0.4
-    fmax_p = 0.4
-    
-    # generate wav config
-    peak_norm = random.uniform(0.9, 1.0)
-    wav_config = {"sample_rate": 22050, "normalize_loudness": None, "peak_norm": peak_norm}
-    trim = {"trim_silence": True, "trim_silence_threshold_in_db": 60, "trim_frame_size": 2048, "trim_hop_size": 512}
-    trim_not = {"trim_silence": False, "trim_silence_threshold_in_db": 0, "trim_frame_size": 0, "trim_hop_size": 0}
-    trim_silence = random.choices([trim, trim_not], weights=[trim_p, 1-trim_p])[0]
-    wav_config.update(trim_silence)
-
-    # generate spec config
-    n_fft = random.choice([512, 1024, 2048])
-    center = random.choice([True, False])
-    pad = 0 if center else n_fft * 3 // 8
-    fmin = random.choices([0, 20, 40], weights=[fmin_p, 1-2*fmin_p, fmin_p])[0]
-    fmax = random.choices([8000, None], weights=[fmax_p, 1-fmax_p])[0]
-    spec_config = {
-        "preemphasis": None,
-        "n_fft": n_fft, "hop_length": n_fft // 4, "win_length": n_fft, "window": "hann",
-        "left_pad": pad, "right_pad": pad, "pad_mode": "reflect",  "center": center,
-        "stft_power": 1,
-        "mel_spec": True,
-        "num_mels": 80, "fmin": fmin, "fmax": fmax
-    }
-
-    # generate post config
-    log_base = random.choice([10, 'e'])
-    log_factor = random.choice([20, 1])
-    normalize_spec = random.choice([True, False])
-    post_config = {
-        "amp_to_db": True,
-        "log_base": log_base,
-        "log_factor": log_factor,
-        "normalize_spec": normalize_spec,
-        "ref_level_db": 0,
-        "min_level_db": -100
-    }
-
-    config = {
-        'github_repo': None, 'commit': None, 'wav_config': wav_config,
-        'spec_config': spec_config, 'post_config': post_config}
-    return config
 
 
 def process(x):
@@ -82,7 +36,7 @@ def generate(data, extension, n_cfg, n_iter, n_workers, outdir):
             subdir = os.path.join(outdir, str(i))
             os.makedirs(subdir, exist_ok=True)
             # Gen cfg and ext
-            cfg = rand_config()
+            cfg = generate_config()
             ext = Extractor(cfg)
             with open(cfgdir+'/'+str(i)+'.json', 'w') as w:
                 json.dump(cfg, w, indent=4)

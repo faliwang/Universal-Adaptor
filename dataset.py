@@ -196,17 +196,14 @@ def get_configs(config_dir):
 
 
 def generate_config():
-    trim_p = 0.2
     fmin_p = 0.4
     fmax_p = 0.4
     
     # generate wav config
     peak_norm = random.uniform(0.9, 1.0)
     wav_config = {"sample_rate": 22050, "normalize_loudness": None, "peak_norm": peak_norm}
-    trim = {"trim_silence": True, "trim_silence_threshold_in_db": 60, "trim_frame_size": 2048, "trim_hop_size": 512}
     trim_not = {"trim_silence": False, "trim_silence_threshold_in_db": 0, "trim_frame_size": 0, "trim_hop_size": 0}
-    trim_silence = random.choices([trim, trim_not], weights=[trim_p, 1-trim_p])[0]
-    wav_config.update(trim_silence)
+    wav_config.update(trim_not)
 
     # generate spec config
     n_fft = random.choice([512, 1024, 2048])
@@ -226,7 +223,8 @@ def generate_config():
     # generate post config
     log_base = random.choice([10, 'e'])
     log_factor = random.choice([20, 1])
-    normalize_spec = random.choice([True, False])
+    normalize_spec = True if log_factor == 20\
+        else random.choice([True, False])
     post_config = {
         "amp_to_db": True,
         "log_base": log_base,

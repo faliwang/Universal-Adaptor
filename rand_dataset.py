@@ -11,7 +11,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from extract import Extractor
 from itertools import product
-from rand_prep import rand_config
+from dataset import generate_config
 
 
 class AudioDataset(Dataset):
@@ -22,7 +22,7 @@ class AudioDataset(Dataset):
             idx:cfg for cfg, idx in get_configs(config_dir+'/config')}
         self.src_exts = {
             idx:Extractor(self.src_cfgs[idx]) for idx in self.src_cfgs}
-        self.tgt_cfgs = [rand_config() for _ in range(len(self.src_cfgs))]
+        self.tgt_cfgs = [generate_config() for _ in range(len(self.src_cfgs))]
         self.tgt_exts = [Extractor(cfg) for cfg in self.tgt_cfgs]
         self.segment_len = segment_len
 
@@ -96,6 +96,9 @@ def convert_config(config):
     spec_cfg = list(sorted(spec_cfg.items()))
     post_cfg = config["post_config"]
     post_cfg = list(sorted(post_cfg.items()))
+    to_log = [
+        "sample_rate", "fmin", "fmax", "n_fft",
+        "hop_length", "win_length", "num_mels"]
     cfg_list = []
     window_dict = {'hann': 1, None: 0}
     pad_mode_dict = {'reflect': 1, None: 0}
@@ -113,7 +116,9 @@ def convert_config(config):
                 cfg_list.append(math.exp(1))
             else:
                 if type(param) == int or type(param) == float:
-                    cfg_list.append(param)
+                    cfg_list.append(
+                        np.log1p(param) if param_name in to_log\
+                        else param)
                 else:
                     raise ValueError(f"We got unknown parameter in config: {param_name}: {param}")
     return cfg_list
