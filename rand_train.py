@@ -218,8 +218,8 @@ def main(
         print("[Info]: Load model checkpoint!",flush = True)
     criterion = nn.L1Loss().to(device)
     optimizer = AdamW(model.parameters(), lr=1e-3)
-    scheduler = torch.optim.lr_scheduler.StepLR(
-        optimizer, step_size = valid_steps, gamma = 0.95)
+    #scheduler = torch.optim.lr_scheduler.StepLR(
+    #    optimizer, step_size = valid_steps, gamma = 0.95)
     print(f"[Info]: Finish creating model!",flush = True)
 
     if not os.path.exists(out_dir):
@@ -256,7 +256,7 @@ def main(
         # Update model
         loss.backward()
         optimizer.step()
-        scheduler.step()
+        #scheduler.step()
         optimizer.zero_grad()
         
         # Log
