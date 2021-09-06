@@ -119,7 +119,9 @@ def model_fn(batch, model, criterion, device):
             loss = loss + criterion(out, gt)
         loss = loss / len(outs)
     else:
-        loss = criterion(outs, gt)
+        d = gt.max(1)[0].max(1)[0]-gt.min(1)[0].min(1)[0]
+        d = d.unsqueeze(1).unsqueeze(1)
+        loss = criterion(outs/d, gt/d)
 
     return loss
 
@@ -167,15 +169,15 @@ def valid(dataloader, model, criterion, device):
 def parse_args():
     """arguments"""
     config = {
-        "data_dir": "/work/b07502172/universal_adaptor/mels",
+        "data_dir": "/work/b07502172/corpus/VCTK_mels",
         "data_type": "npy",
         "config_dir": "./config",
-        "out_dir": "/work/b07502172/universal_adaptor/results",
-        'exp_name': 'unet_affine',
+        "out_dir": "/work/b07502172/universal_adaptor/results_vctk",
+        'exp_name': 'unet_affine_scheduler',
         "batch_size": 32,
         "n_workers": 4,
         "segment_length": 200,
-        "valid_steps": 3600,
+        "valid_steps": 12500,
         "warmup_steps": 1000,
     }
 
@@ -195,7 +197,7 @@ def main(
     warmup_steps,
 ):
     """Main function."""
-    print(f"[Info]: Doing {exp_name} experiment!")
+    print(f"[Info]: Doing {exp_name} training!")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[Info]: Use {device} now!")
 
@@ -216,7 +218,7 @@ def main(
         print("[Info]: Load model checkpoint!",flush = True)
     criterion = nn.L1Loss().to(device)
     optimizer = AdamW(model.parameters(), lr=1e-3)
-    # scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
+    scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
     print(f"[Info]: Finish creating model!",flush = True)
 
     if not os.path.exists(out_dir):
@@ -253,7 +255,7 @@ def main(
         # Update model
         loss.backward()
         optimizer.step()
-        # scheduler.step()
+        scheduler.step()
         optimizer.zero_grad()
         
         # Log

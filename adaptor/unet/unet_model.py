@@ -69,7 +69,7 @@ class UNet_affine(nn.Module):
         super(UNet_affine, self).__init__()
         self.n_channels = n_channels
         self.config_len = config_len
-        self.bilinear = bilinear
+        self.bilinear = bilinear if not res_add else False
         self.res_add = res_add
         self.num_layers = num_layers
 

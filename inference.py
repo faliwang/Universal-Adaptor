@@ -16,10 +16,10 @@ import adaptor
 def parse_args():
     """arguments"""
     config = {
-        "data_dir": "/work/b07502172/universal_adaptor/trial/mels/gt_trans",
+        "data_dir": "/work/b07502172/universal_adaptor/trial_vctk/mels/gt_trans",
         "config_dir": "./config",
-        "exp_name": 'r2attunet_config',
-        "out_dir": "/work/b07502172/universal_adaptor/results",
+        "exp_name": 'unet_affine_scheduler',
+        "out_dir": "/work/b07502172/universal_adaptor/results_vctk",
         "num_workers": 4,
     }
 
@@ -34,6 +34,7 @@ def main(
     num_workers,
 ):
     """Main function."""
+    print(f"[Info]: Doing {exp_name} inference!")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[Info]: Use {device} now!")
 
@@ -54,7 +55,8 @@ def main(
     # model = Refiner_ResNet_with_config(
     #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
     #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
-    model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
+    # model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
+    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=27, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
     model_path = os.path.join(out_dir, 'ckpts', f'{exp_name}.ckpt')
     model.load_state_dict(torch.load(model_path))
     model.eval()

@@ -1,6 +1,6 @@
 import os
 import argparse
-from itertools import permutations
+from itertools import permutations, product
 from multiprocessing import Pool, cpu_count
 
 from generate import generate
@@ -24,14 +24,14 @@ def preprocess(config_dir, data, n_iter, n_workers, outdir):
     # generate inputs
     input_dir = os.path.join(outdir, 'input')
     os.makedirs(input_dir, exist_ok=True)
-    perms = list(permutations(config_names, 2))
+    perms = list(product(config_names, repeat=2))
     for perm in perms:
         src, tgt = perm
         data_dir = os.path.join(gt_dir, src)
         for config, config_name in configs:
             if config_name == tgt:
                 tgt_config = config
-            elif config_name == src:
+            if config_name == src:
                 src_config = config
         out_dir = os.path.join(input_dir, src + '_' + tgt)
         os.makedirs(out_dir, exist_ok=True)

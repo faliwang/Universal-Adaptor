@@ -17,7 +17,12 @@ class AudioDataset(Dataset):
     def __init__(self, data_dir, data_type, config_dir, segment_len=128):
         self.data_type = data_type
         if data_type == 'wav':
-            self.files = self.get_wav_files(data_dir)
+            if 'ljs' in data_dir.lower():
+                self.files = self.get_LJS_wav_files(data_dir)
+            elif 'vctk' in data_dir.lower():
+                self.files = self.get_VCTK_wav_files(data_dir)
+            else:
+                raise NotImplementedError(f'We did not implement the dataset {data_dir}')
         elif data_type == 'npy':
             self.files = self.get_mel_files(data_dir)
         else:
@@ -75,7 +80,7 @@ class AudioDataset(Dataset):
         return torch.FloatTensor(input), torch.FloatTensor(gt), torch.FloatTensor(tgt_cfg_list)
     
 
-    def get_wav_files(self, wav_dir):
+    def get_LJS_wav_files(self, wav_dir):
         """
             return list: [wav_path]
         """
@@ -84,6 +89,20 @@ class AudioDataset(Dataset):
         for f_path in wav_files:
             if f_path.endswith('.wav'):
                 files.append(os.path.join(wav_dir, f_path))
+        assert len(files) != 0, 'Num of wav in wav dir should not be zero'
+        return sorted(files) 
+
+
+    def get_VCTK_wav_files(self, wav_dir):
+        """
+            return list: [wav_path]
+        """
+        files = []
+        for spk in sorted(os.listdir(wav_dir)):
+            spk_dir = os.path.join(wav_dir, spk)
+            for wav_file in sorted(os.listdir(spk_dir)):
+                if wav_file.endswith('.wav'):
+                    files.append(os.path.join(spk_dir, wav_file))
         assert len(files) != 0, 'Num of wav in wav dir should not be zero'
         return sorted(files) 
 
@@ -188,6 +207,7 @@ def get_configs(config_dir):
                 config = json.load(f)
                 configs.append((config, config_name))
     else:
+        print("Generate Random Config !!")
         rand_config_1 = generate_config()
         rand_config_2 = generate_config()
         rand_config_3 = generate_config()
