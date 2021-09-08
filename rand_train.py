@@ -119,9 +119,11 @@ def model_fn(batch, model, criterion, device):
             loss = loss + criterion(out, gt)
         loss = loss / len(outs)
     else:
-        d = gt.max(1)[0].max(1)[0]-gt.min(1)[0].min(1)[0]
-        d = d.unsqueeze(1).unsqueeze(1)
-        loss = criterion(outs/d, gt/d)
+        ma = gt.max(1, True)[0].max(2, True)[0]
+        mi = gt.min(1, True)[0].min(2, True)[0]
+        outs = (outs-mi)/(ma-mi)
+        gt = (outs-mi)/(ma-mi)
+        loss = criterion(outs, gt)
 
     return loss
 
@@ -169,7 +171,7 @@ def valid(dataloader, model, criterion, device):
 def parse_args():
     """arguments"""
     config = {
-        "data_dir": "../corpus/LJSpeech/22k/wavs",
+        "data_dir": "../corpus/VCTK/22k/wavs",
         "data_type": "npy",
         "config_dir": "res",
         "out_dir": "./",
