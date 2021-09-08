@@ -122,7 +122,7 @@ def model_fn(batch, model, criterion, device):
         ma = gt.max(1, True)[0].max(2, True)[0]
         mi = gt.min(1, True)[0].min(2, True)[0]
         outs = (outs-mi)/(ma-mi)
-        gt = (outs-mi)/(ma-mi)
+        gt = (gt-mi)/(ma-mi)
         loss = criterion(outs, gt)
 
     return loss
