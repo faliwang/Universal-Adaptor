@@ -24,7 +24,7 @@
         "mel_spec": true,
         "num_mels": 80,
         "fmin": 40,
-        "fmax": null
+        "fmax": 11025
     },
     "post_config": {
         "amp_to_db": true,
