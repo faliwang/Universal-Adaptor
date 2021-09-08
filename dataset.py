@@ -229,8 +229,8 @@ def generate_config():
     n_fft = random.choice([512, 1024, 2048])
     center = random.choice([True, False])
     pad = 0 if center else n_fft * 3 // 8
-    fmin = random.choices([0, 20, 40], weights=[fmin_p, 1-2*fmin_p, fmin_p])[0]
-    fmax = random.choices([8000, None], weights=[fmax_p, 1-fmax_p])[0]
+    fmin = random.choices([0, 30, 50, 70, 90])[0]
+    fmax = random.choices([7600, 8000, 9500, 11025])[0]
     spec_config = {
         "preemphasis": None,
         "n_fft": n_fft, "hop_length": n_fft // 4, "win_length": n_fft, "window": "hann",
