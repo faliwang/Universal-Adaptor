@@ -16,6 +16,7 @@ from tensorboardX import SummaryWriter
 
 from rand_dataset import AudioDataset
 import adaptor
+from utils.plot import plot_spec
 
 
 def get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length):
@@ -121,11 +122,11 @@ def model_fn(batch, model, criterion, device):
     else:
         ma = gt.max(1, True)[0].max(2, True)[0]
         mi = gt.min(1, True)[0].min(2, True)[0]
-        outs = (outs-mi)/(ma-mi)
-        gt = (gt-mi)/(ma-mi)
-        loss = criterion(outs, gt)
+        loss = criterion(
+                (outs-mi)/(ma-mi),
+                (gt-mi)/(ma-mi))
 
-    return loss
+    return loss, outs
 
 
 class BCELoss(nn.Module):
@@ -152,7 +153,7 @@ def valid(dataloader, model, criterion, device):
 
     for i, batch in enumerate(dataloader):
         with torch.no_grad():
-            loss = model_fn(batch, model, criterion, device)
+            loss, outs = model_fn(batch, model, criterion, device)
             running_loss += loss.item()
 
         pbar.update(dataloader.batch_size)
@@ -251,7 +252,7 @@ def main(
             train_iterator = iter(train_loader)
             batch = next(train_iterator)
 
-        loss = model_fn(batch, model, criterion, device)
+        loss, outs = model_fn(batch, model, criterion, device)
         batch_loss = loss.item()
         writer.add_scalar('training_loss', loss, step)
 
@@ -274,6 +275,12 @@ def main(
 
             valid_loss = valid(valid_loader, model, criterion, device)
             writer.add_scalar('valid_loss', valid_loss, step)
+            writer.add_image('input',
+                plot_spec(batch[0][0].detach().cpu().numpy()), step)
+            writer.add_image('target',
+                plot_spec(batch[1][0].detach().cpu().numpy()), step)
+            writer.add_image('output',
+                plot_spec(outs[0].detach().cpu().numpy()), step)
 
             # keep the best model
             if valid_loss < best_loss:
