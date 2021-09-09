@@ -226,14 +226,15 @@ def generate_config():
     wav_config.update(trim_not)
 
     # generate spec config
-    n_fft = random.choice([512, 1024, 2048])
+    win_length = random.choice([800, 900, 1024, 1100, 1200])
+    n_fft = max(win_length, random.choice([1024, 2048]))
     center = random.choice([True, False])
-    pad = 0 if center else n_fft * 3 // 8
+    pad = 0 if center else (n_fft-win_length//4)//2
     fmin = random.choices([0, 30, 50, 70, 90])[0]
     fmax = random.choices([7600, 8000, 9500, 11025])[0]
     spec_config = {
         "preemphasis": None,
-        "n_fft": n_fft, "hop_length": n_fft // 4, "win_length": n_fft, "window": "hann",
+        "n_fft": n_fft, "hop_length": win_length//4, "win_length": win_length, "window": "hann",
         "left_pad": pad, "right_pad": pad, "pad_mode": "reflect",  "center": center,
         "stft_power": 1,
         "mel_spec": True,
