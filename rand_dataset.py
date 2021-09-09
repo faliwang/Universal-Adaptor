@@ -42,13 +42,12 @@ class AudioDataset(Dataset):
             os.path.join(self.data_dir, bn+'.wav'))
         seg_l = (self.segment_len+1)*\
             tgt_cfg['spec_config']['hop_length']
-        mid_wav = self.trim_wav(mid_wav, seg_l)
-        tgt_wav = self.trim_wav(tgt_wav, seg_l)
+        mid_wav, tgt_wav = self.trim_wav(mid_wav, tgt_wav, seg_l)
 
         # gen inp & tgt mel
         inp_mel = tgt_ext.convert(mid_wav)[:, :self.segment_len]
         tgt_mel = tgt_ext.convert(tgt_wav)[:, :self.segment_len]
-
+        
         inp = torch.from_numpy(inp_mel)
         tgt = torch.from_numpy(tgt_mel)
         tgt_cfg_list = convert_config(tgt_cfg)
@@ -64,13 +63,16 @@ class AudioDataset(Dataset):
                     files.append([os.path.join(subdir, f_path), str(idx)])
         return files
 
-    def trim_wav(self, wav, seg_l):
-        if wav.shape[0] > seg_l:
-            start = np.random.randint(0, len(wav)-seg_l)
-            wav = wav[start:start+seg_l]
-        elif wav.shape[0] < seg_l:
-            wav = np.pad(wav, (0, seg_l-wav.shape[0]), 'constant', constant_values = (0, 0))
-        return wav
+    def trim_wav(self, mid, tgt, seg_l):
+        l = min(len(mid), len(tgt))
+        mid, tgt = mid[:l], tgt[:l]
+        if l > seg_l:
+            s = np.random.randint(0, l-seg_l)
+            mid, tgt = mid[s:s+seg_l], tgt[s:s+seg_l]
+        elif l < seg_l:
+            mid = np.pad(mid, (0, seg_l-l), 'constant', constant_values = (0, 0))
+            tgt = np.pad(tgt, (0, seg_l-l), 'constant', constant_values = (0, 0))
+        return mid, tgt
 
 
 def get_configs(config_dir):
