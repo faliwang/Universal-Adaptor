@@ -19,7 +19,7 @@ def process(x):
     np.save(outpath, y_, allow_pickle=False)
 
 
-def generate(data, extension, n_cfg, n_iter, n_workers, outdir):
+def generate(data, extension, n_cfg, cfg_dir, n_iter, n_workers, outdir):
     # Search for files
     data_list = [os.path.join(data, x) for x in os.listdir(data) if x.endswith(extension)]
     print(f'{len(data_list)} {extension[1:]} files found in {data}')
@@ -36,7 +36,7 @@ def generate(data, extension, n_cfg, n_iter, n_workers, outdir):
             subdir = os.path.join(outdir, str(i))
             os.makedirs(subdir, exist_ok=True)
             # Gen cfg and ext
-            cfg = generate_config()
+            cfg = generate_config(cfg_dir)
             ext = Extractor(cfg)
             with open(cfgdir+'/'+str(i)+'.json', 'w') as w:
                 json.dump(cfg, w, indent=4)
@@ -59,6 +59,8 @@ if __name__ == '__main__':
                         help='File extension to search for in dataset folder')
     parser.add_argument('--n_cfg', '-nc', metavar='N', type=int, default=4,
                         help='The number of random configs')
+    parser.add_argument('--cfg_dir', '-cfg', metavar='N', type=str, default='./config',
+                        help='dir of fixed configs')
     parser.add_argument('--n_iter', '-ni', metavar='N', type=int, default=32,
                         help='The number of iterations for Griffin-Lim')
     parser.add_argument('--n_workers', '-n', metavar='N', type=int,

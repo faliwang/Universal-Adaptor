@@ -208,29 +208,45 @@ def get_configs(config_dir):
                 configs.append((config, config_name))
     else:
         print("Generate Random Config !!")
-        rand_config_1 = generate_config()
-        rand_config_2 = generate_config()
-        rand_config_3 = generate_config()
+        rand_config_1 = generate_config(config_dir)
+        rand_config_2 = generate_config(config_dir)
+        rand_config_3 = generate_config(config_dir)
         configs = [(rand_config_1, 'random1'), (rand_config_2, 'random2'), (rand_config_3, 'random3')]
     return configs
 
 
-def generate_config():
-    fmin_p = 0.4
-    fmax_p = 0.4
+def generate_config(config_dir):
+    config = {}
+    config['wav_config'] = generate_wav_config()
+    config['spec_config'] = generate_spec_config()
+    config['post_config'] = generate_post_config()
+    config['github_repo'] = None
     
-    # generate wav config
+    configs = os.listdir(config_dir)
+    for cfg_path in configs:
+        with open(os.path.join(config_dir, cfg_path), 'r') as f:
+            cfg = json.load(f)
+        while (cfg['spec_config'] == config['spec_config'] and cfg['post_config'] == config['post_config']):
+            config['spec_config'] = generate_spec_config()
+            config['post_config'] = generate_post_config()
+
+    return config
+
+
+def generate_wav_config():
     peak_norm = random.uniform(0.9, 1.0)
-    wav_config = {"sample_rate": 22050, "normalize_loudness": None, "peak_norm": peak_norm}
+    wav_config = {"sample_rate": 22050, "normalize_loudness": None, "peak_norm": peak_norm, "highpass_cutoff": 0.0}
     trim_not = {"trim_silence": False, "trim_silence_threshold_in_db": 0, "trim_frame_size": 0, "trim_hop_size": 0}
     wav_config.update(trim_not)
+    return wav_config
 
-    # generate spec config
+
+def generate_spec_config():
     win_length = random.choice([800, 900, 1024, 1100, 1200])
     n_fft = max(win_length, random.choice([1024, 2048]))
     center = random.choice([True, False])
     pad = 0 if center else (n_fft-win_length//4)//2
-    fmin = random.choices([0, 30, 50, 70, 90])[0]
+    fmin = random.choices([0, 30, 50, 70, 90, 125])[0]
     fmax = random.choices([7600, 8000, 9500, 11025])[0]
     spec_config = {
         "preemphasis": None,
@@ -240,8 +256,10 @@ def generate_config():
         "mel_spec": True,
         "num_mels": 80, "fmin": fmin, "fmax": fmax
     }
+    return spec_config
 
-    # generate post config
+
+def generate_post_config():
     log_base = random.choice([10, 'e'])
     log_factor = random.choice([20, 1])\
         if log_base == 10 else 1
@@ -254,13 +272,7 @@ def generate_config():
         "ref_level_db": 0,
         "min_level_db": -100
     }
-
-    config = {}
-    config['wav_config'] = wav_config
-    config['spec_config'] = spec_config
-    config['post_config'] = post_config
-    config['github_repo'] = None
-    return config
+    return post_config
 
 
 # def convert_config(config):

@@ -19,9 +19,9 @@ import adaptor
 from utils.plot import plot_spec
 
 
-def get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length):
+def get_dataloader(data_dir, data_type, config_dir, fix_config_dir, batch_size, n_workers, segment_length):
     """Generate dataloader"""
-    dataset = AudioDataset(data_dir, data_type, config_dir, segment_len=segment_length)
+    dataset = AudioDataset(data_dir, data_type, config_dir, fix_config_dir, segment_len=segment_length)
 
     # Split dataset into training dataset and validation dataset
     trainlen = int(0.9 * len(dataset))
@@ -177,6 +177,7 @@ def parse_args():
         "config_dir": "res",
         "out_dir": "./",
         'exp_name': 'unet_affine',
+        "fix_config_dir": "./config",
         "batch_size": 32,
         "n_workers": 8,
         "segment_length": 200,
@@ -191,6 +192,7 @@ def main(
     data_dir,
     data_type,
     config_dir,
+    fix_config_dir,
     out_dir,
     exp_name,
     batch_size,
@@ -204,7 +206,7 @@ def main(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[Info]: Use {device} now!")
 
-    train_loader, valid_loader = get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length)
+    train_loader, valid_loader = get_dataloader(data_dir, data_type, config_dir, fix_config_dir, batch_size, n_workers, segment_length)
     train_iterator = iter(train_loader)
     print(f"[Info]: Finish loading data!",flush = True)
 

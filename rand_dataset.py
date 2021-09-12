@@ -15,14 +15,14 @@ from dataset import generate_config
 
 
 class AudioDataset(Dataset):
-    def __init__(self, data_dir, data_type, config_dir, segment_len=128):
+    def __init__(self, data_dir, data_type, config_dir, fix_config_dir, segment_len=128):
         self.data_dir = data_dir
         self.files = self.get_wav_npy_files(config_dir)
         self.src_cfgs = {
             idx:cfg for cfg, idx in get_configs(config_dir+'/config')}
         self.src_exts = {
             idx:Extractor(self.src_cfgs[idx]) for idx in self.src_cfgs}
-        self.tgt_cfgs = [generate_config() for _ in range(100)]
+        self.tgt_cfgs = [generate_config(fix_config_dir) for _ in range(100)]
         self.tgt_exts = [Extractor(cfg) for cfg in self.tgt_cfgs]
         self.segment_len = segment_len
 
