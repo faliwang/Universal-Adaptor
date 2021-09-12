@@ -216,7 +216,7 @@ def main(
     #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
     #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
     # model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
-    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=27, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
+    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=28, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
     ckpt_file = os.path.join(out_dir, 'ckpts', f"{exp_name}.ckpt")
     if os.path.isfile(ckpt_file):
         model.load_state_dict(torch.load(ckpt_file))
@@ -243,7 +243,7 @@ def main(
     for step in range(total_steps):
         # change data
         if (step + 1) % valid_steps == 1 and step != 0:
-            train_loader, valid_loader = get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length)
+            train_loader, valid_loader = get_dataloader(data_dir, data_type, config_dir, fix_config_dir, batch_size, n_workers, segment_length)
             train_iterator = iter(train_loader)
             print(f"[Info]: Finish Reloading data!",flush = True)
             
