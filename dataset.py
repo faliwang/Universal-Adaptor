@@ -222,13 +222,9 @@ def generate_config(config_dir):
     config['post_config'] = generate_post_config()
     config['github_repo'] = None
     
-    configs = os.listdir(config_dir)
-    for cfg_path in configs:
-        with open(os.path.join(config_dir, cfg_path), 'r') as f:
-            cfg = json.load(f)
-        while (cfg['spec_config'] == config['spec_config'] and cfg['post_config'] == config['post_config']):
-            config['spec_config'] = generate_spec_config()
-            config['post_config'] = generate_post_config()
+    while check_same_config(config, config_dir):
+        config['spec_config'] = generate_spec_config()
+        config['post_config'] = generate_post_config()
 
     return config
 
@@ -273,6 +269,15 @@ def generate_post_config():
         "min_level_db": -100
     }
     return post_config
+
+
+def check_same_config(config, cfg_dir):
+    for cfg_path in os.listdir(cfg_dir):
+        with open(os.path.join(cfg_dir, cfg_path), 'r') as f:
+            cfg = json.load(f)
+        if (cfg['spec_config'] == config['spec_config'] and cfg['post_config'] == config['post_config']):
+            return 1
+    return 0
 
 
 # def convert_config(config):
