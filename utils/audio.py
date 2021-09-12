@@ -22,6 +22,29 @@ def trim_silence(y, wav_config):
             )[0]
 
 
+def low_cut_filter(x, fs, cutoff=70):
+    """APPLY LOW CUT FILTER.
+
+    https://github.com/kan-bayashi/PytorchWaveNetVocoder
+
+    Args:
+        x (ndarray): Waveform sequence.
+        fs (int): Sampling frequency.
+        cutoff (float): Cutoff frequency of low cut filter.
+    Return:
+        ndarray: Low cut filtered waveform sequence.
+    """
+    nyquist = fs // 2
+    norm_cutoff = cutoff / nyquist
+    from scipy.signal import firwin, lfilter
+
+    # low cut filter
+    fil = firwin(255, norm_cutoff, pass_zero=False)
+    lcf_x = lfilter(fil, 1, x)
+
+    return lcf_x
+
+
 def stft(y, spec_config):
     y = np.pad(y, [(spec_config["left_pad"],spec_config["right_pad"])], mode=spec_config["pad_mode"])
     return librosa.stft(y, n_fft=spec_config["n_fft"],

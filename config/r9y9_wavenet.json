@@ -1,15 +1,15 @@
 {
-    "github_repo": "https://github.com/descriptinc/melgan-neurips",
-    "commit": "6488045bfba1975602288de07a58570c7b4d66ea",
+    "github_repo": "https://github.com/fatchord/WaveRNN",
+    "commit": "3595219b2f2f5353f0867a7bb59abcb15aba8831",
     "wav_config": {
         "sample_rate": 22050,
         "normalize_loudness": null,
-        "peak_norm": 0.95,
-        "trim_silence": false,
-        "trim_silence_threshold_in_db": 0,
-        "trim_frame_size": 0,
-        "trim_hop_size": 0,
-        "highpass_cutoff": 0
+        "peak_norm": null,
+        "trim_silence": true,
+        "trim_silence_threshold_in_db": 60,
+        "trim_frame_size": 2048,
+        "trim_hop_size": 512,
+        "highpass_cutoff": 70
     },
     "spec_config": {
         "preemphasis": null,
@@ -17,15 +17,15 @@
         "hop_length": 256,
         "win_length": 1024,
         "window": "hann",
-        "left_pad": 384,
-        "right_pad": 384,
+        "left_pad": 0,
+        "right_pad": 0,
         "pad_mode": "reflect",
-        "center": false,
+        "center": true,
         "stft_power": 1,
         "mel_spec": true,
         "num_mels": 80,
-        "fmin": 0,
-        "fmax": 11025
+        "fmin": 125,
+        "fmax": 7600
     },
     "post_config": {
         "amp_to_db": true,

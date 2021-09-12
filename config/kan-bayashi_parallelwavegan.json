@@ -8,7 +8,8 @@
         "trim_silence": true,
         "trim_silence_threshold_in_db": 60,
         "trim_frame_size": 2048,
-        "trim_hop_size": 512
+        "trim_hop_size": 512,
+        "highpass_cutoff": 0
     },
     "spec_config": {
         "preemphasis": null,

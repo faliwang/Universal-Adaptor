@@ -175,7 +175,7 @@ def parse_args():
         "data_type": "npy",
         "config_dir": "./config",
         "out_dir": "/work/b07502172/universal_adaptor/results_vctk",
-        'exp_name': 'unet_affine_scheduler',
+        'exp_name': 'unet_affine_log',
         "batch_size": 32,
         "n_workers": 4,
         "segment_length": 200,

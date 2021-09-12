@@ -22,6 +22,8 @@ class Extractor:
             y = y/np.abs(y).max()
         if self.wav_config["trim_silence"]:
             y = audio.trim_silence(y, self.wav_config)
+        if self.wav_config["highpass_cutoff"] > 0.0:
+            y = audio.low_cut_filter(y, self.wav_config["sample_rate"], self.wav_config["highpass_cutoff"])
         return y
 
     def save(self, y, path):
