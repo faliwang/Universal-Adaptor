@@ -52,6 +52,7 @@ class AudioDataset(Dataset):
             # getting input mel
             src_wav = src_ext.load(wav_path)
             src_mel = src_ext.convert(src_wav)
+            src_mel = src_ext.post_convert(src_mel)
             mid_wav = src_ext.inverse(src_mel)
             tgt_mel_init = tgt_ext.convert(mid_wav)
             input = torch.from_numpy(tgt_mel_init)
@@ -184,6 +185,7 @@ class InferenceDataset(Dataset):
     def __getitem__(self, index):
         input_path, model_name, input_name = self.data[index]
         mel = torch.from_numpy(np.load(input_path)).float()
+        tgt_config = ''
         for config, config_name in self.configs:
             if config_name == model_name.split('_')[-1]:
                 tgt_config = config
@@ -220,11 +222,20 @@ def generate_config(config_dir):
     config['wav_config'] = generate_wav_config()
     config['spec_config'] = generate_spec_config()
     config['post_config'] = generate_post_config()
+    # post_config = {
+    #     "amp_to_db": True,
+    #     "log_base": 'e',
+    #     "log_factor": 1,
+    #     "normalize_spec": False,
+    #     "ref_level_db": 0,
+    #     "min_level_db": -100
+    # }
+    # config['post_config'] = post_config
     config['github_repo'] = None
     
     while check_same_config(config, config_dir):
         config['spec_config'] = generate_spec_config()
-        config['post_config'] = generate_post_config()
+        # config['post_config'] = generate_post_config()
 
     return config
 
@@ -260,12 +271,14 @@ def generate_post_config():
     log_factor = random.choice([20, 1])\
         if log_base == 10 else 1
     normalize_spec = log_factor == 20
+    ref_level_db = random.choice([20, 0]) \
+        if normalize_spec else 0
     post_config = {
         "amp_to_db": True,
         "log_base": log_base,
         "log_factor": log_factor,
         "normalize_spec": normalize_spec,
-        "ref_level_db": 0,
+        "ref_level_db": ref_level_db,
         "min_level_db": -100
     }
     return post_config
@@ -275,7 +288,7 @@ def check_same_config(config, cfg_dir):
     for cfg_path in os.listdir(cfg_dir):
         with open(os.path.join(cfg_dir, cfg_path), 'r') as f:
             cfg = json.load(f)
-        if (cfg['spec_config'] == config['spec_config'] and cfg['post_config'] == config['post_config']):
+        if (cfg['spec_config'] == config['spec_config']): #  and cfg['post_config'] == config['post_config']):
             return 1
     return 0
 

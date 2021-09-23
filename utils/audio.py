@@ -97,6 +97,20 @@ def amp_to_db(S, post_config):
     return S
 
 
+def db_change_base(S, post_config):
+    log_base = post_config["log_base"]
+    log_factor = post_config["log_factor"]
+    if log_base == "e":
+        S = log_factor*S
+    elif log_base == 2:
+        S = log_factor*S/np.log(2)
+    elif log_base == 10:
+        S = log_factor*S/np.log(10)
+    else:
+        raise NotImplementedError('no base {} in amp_to_db'.format(log_base))
+    return S
+
+
 def db_to_amp(S, post_config):
     log_base = post_config["log_base"]
     log_factor = post_config["log_factor"]

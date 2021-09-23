@@ -12,6 +12,7 @@ def process(x):
     S = np.load(fpath)
     y = src_ext.inverse(S, n_iter=n_iter)
     S = tgt_ext.convert(y)
+    # S = tgt_ext.post_convert(S)
     idx = fpath.split('/')[-1].split('.')[0]
     outpath = os.path.join(outdir, f'{idx}.npy')
     np.save(outpath, S, allow_pickle=False)

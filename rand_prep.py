@@ -13,6 +13,7 @@ def process(x):
     ext, n_iter, fpath, outdir = x
     y = ext.load(fpath)
     S = ext.convert(y)
+    S = ext.post_convert(S)
     y_ = ext.inverse(S, n_iter=n_iter)
     idx = fpath.split('/')[-1].split('.')[0]
     outpath = os.path.join(outdir, f'{idx}.npy')

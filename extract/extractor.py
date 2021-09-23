@@ -38,7 +38,12 @@ class Extractor:
         if self.spec_config["mel_spec"]:
             S = audio.linear_to_mel(S, self.mel_basis)
         if self.post_config["amp_to_db"]:
-            S = audio.amp_to_db(S, self.post_config)
+            S = audio.amp_to_db(S, {"log_base": 'e', "log_factor": 1})
+        return S
+
+    def post_convert(self, S):
+        if self.post_config["amp_to_db"]:
+            S = audio.db_change_base(S, self.post_config)
             if self.post_config["normalize_spec"]:
                 S = audio.normalize(S, self.post_config)
         return S

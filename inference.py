@@ -9,7 +9,8 @@ import numpy as np
 from torch.utils.data import DataLoader
 from tqdm.notebook import tqdm
 
-from dataset import InferenceDataset
+from dataset import InferenceDataset, get_configs
+from extract import Extractor
 import adaptor
 
 
@@ -40,6 +41,8 @@ def main(
 
     data_dir = os.path.abspath(data_dir)
     config_dir = os.path.abspath(config_dir)
+    configs = get_configs(config_dir)
+    extractors = [(Extractor(config), config_name) for config, config_name in configs]
     dataset = InferenceDataset(data_dir, config_dir)
     dataloader = DataLoader(
         dataset,
@@ -56,7 +59,7 @@ def main(
     #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
     #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
     # model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
-    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=27, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
+    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=28, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
     model_path = os.path.join(out_dir, 'ckpts', f'{exp_name}.ckpt')
     model.load_state_dict(torch.load(model_path))
     model.eval()
@@ -82,8 +85,14 @@ def main(
                 preds = preds.cpu().numpy()
             for pred, model_name, input_name in zip(preds, model_names, input_names):
                 input_name = input_name[:-4]
-                if model_name.split('_')[-1] == 'wavernn':
-                    pred = np.clip(pred, 0, 1)
+                # if model_name.split('_')[-1] == 'wavernn':
+                #     pred = np.clip(pred, 0, 1)
+                tgt_ext = None
+                for ext, config_name in extractors:
+                    if config_name == model_name.split('_')[-1]:
+                        tgt_ext = ext
+                        break
+                pred = tgt_ext.post_convert(pred)
                 np.save(os.path.join(model_dirs[model_name], input_name), pred)
   
 

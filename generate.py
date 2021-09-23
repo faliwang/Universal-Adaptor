@@ -11,6 +11,7 @@ def process(x):
     ext, fpath, outdir = x
     y = ext.load(fpath)
     S = ext.convert(y)
+    S = ext.post_convert(S)
     idx = fpath.split('/')[-1].split('.')[0]
     outpath = os.path.join(outdir, f'{idx}.npy')
     np.save(outpath, S, allow_pickle=False)

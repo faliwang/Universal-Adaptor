@@ -4,6 +4,7 @@ import os
 import torch
 import math
 import torch.nn as nn
+import numpy as np
 from pathlib import Path
 from tqdm import tqdm
 from torch.optim import AdamW
@@ -210,7 +211,7 @@ def main(
     train_iterator = iter(train_loader)
     print(f"[Info]: Finish loading data!",flush = True)
 
-    save_steps = valid_steps * 2
+    save_steps = valid_steps * 1
     total_steps = valid_steps * 100
     # model = Refiner_ResNet_with_config(
     #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
@@ -223,8 +224,8 @@ def main(
         print("[Info]: Load model checkpoint!",flush = True)
     criterion = nn.L1Loss().to(device)
     optimizer = AdamW(model.parameters(), lr=1e-3)
-    #scheduler = torch.optim.lr_scheduler.StepLR(
-    #    optimizer, step_size = valid_steps, gamma = 0.95)
+    scheduler = torch.optim.lr_scheduler.StepLR(
+       optimizer, step_size = valid_steps * 50, gamma = 0.5)
     print(f"[Info]: Finish creating model!",flush = True)
 
     if not os.path.exists(out_dir):
@@ -261,7 +262,7 @@ def main(
         # Update model
         loss.backward()
         optimizer.step()
-        #scheduler.step()
+        scheduler.step()
         optimizer.zero_grad()
         
         # Log

@@ -59,7 +59,7 @@ def get_configs(config_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Preprocess for TTS and vocoder')
-    parser.add_argument('--config_dir', '-c', metavar='DATA',
+    parser.add_argument('--config_dir', '-c', metavar='DATA', default='./config',
                         help='The config file for Extractor')
     parser.add_argument('--data', '-d', metavar='DATA',
                         default='data', help='The dataset folder')
