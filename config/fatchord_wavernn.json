@@ -9,7 +9,7 @@
         "trim_silence_threshold_in_db": 0,
         "trim_frame_size": 0,
         "trim_hop_size": 0,
-        "highpass_cutoff": 70
+        "highpass_cutoff": 0
     },
     "spec_config": {
         "preemphasis": null,
