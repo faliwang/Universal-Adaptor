@@ -22,14 +22,14 @@ class Extractor:
             y = y/np.abs(y).max()
         if self.wav_config["trim_silence"]:
             y = audio.trim_silence(y, self.wav_config)
-        if self.wav_config["highpass_cutoff"] > 0.0:
-            y = audio.low_cut_filter(y, self.wav_config["sample_rate"], self.wav_config["highpass_cutoff"])
         return y
 
     def save(self, y, path):
         audio.save_wav(y, path, self.wav_config["sample_rate"])
 
     def convert(self, y):
+        if self.wav_config["highpass_cutoff"] > 0.0:
+            y = audio.low_cut_filter(y, self.wav_config["sample_rate"], self.wav_config["highpass_cutoff"])
         if self.spec_config["preemphasis"] is not None:
             pass
         D = audio.stft(y, self.spec_config)
