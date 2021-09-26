@@ -11,7 +11,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from extract import Extractor
 from itertools import product
-from dataset import generate_config
+from dataset import generate_config, convert_config
 
 
 class AudioDataset(Dataset):
@@ -91,36 +91,36 @@ def get_configs(config_dir):
     return configs
 
 
-def convert_config(config):
-    wav_cfg = config["wav_config"]
-    wav_cfg = list(sorted(wav_cfg.items()))
-    spec_cfg = config["spec_config"]
-    spec_cfg = list(sorted(spec_cfg.items()))
-    post_cfg = config["post_config"]
-    post_cfg = list(sorted(post_cfg.items()))
-    to_log = [
-        "sample_rate", "fmin", "fmax", "n_fft",
-        "hop_length", "win_length", "num_mels"]
-    cfg_list = []
-    window_dict = {'hann': 1, None: 0}
-    pad_mode_dict = {'reflect': 1, None: 0}
-    for config in [wav_cfg, spec_cfg, post_cfg]:
-        for param_name, param in config:
-            if param_name == 'window':
-                cfg_list.append(window_dict[param])
-            elif param_name == 'pad_mode':
-                cfg_list.append(pad_mode_dict[param])
-            elif param == True:
-                cfg_list.append(1)
-            elif param == None or param == False:
-                cfg_list.append(0)
-            elif param == "e":
-                cfg_list.append(math.exp(1))
-            else:
-                if type(param) == int or type(param) == float:
-                    cfg_list.append(
-                        np.log1p(param) if param_name in to_log\
-                        else param)
-                else:
-                    raise ValueError(f"We got unknown parameter in config: {param_name}: {param}")
-    return cfg_list
+# def convert_config(config):
+#     wav_cfg = config["wav_config"]
+#     wav_cfg = list(sorted(wav_cfg.items()))
+#     spec_cfg = config["spec_config"]
+#     spec_cfg = list(sorted(spec_cfg.items()))
+#     post_cfg = config["post_config"]
+#     post_cfg = list(sorted(post_cfg.items()))
+#     to_log = [
+#         "sample_rate", "fmin", "fmax", "n_fft",
+#         "hop_length", "win_length", "num_mels"]
+#     cfg_list = []
+#     window_dict = {'hann': 1, None: 0}
+#     pad_mode_dict = {'reflect': 1, None: 0}
+#     for config in [wav_cfg, spec_cfg, post_cfg]:
+#         for param_name, param in config:
+#             if param_name == 'window':
+#                 cfg_list.append(window_dict[param])
+#             elif param_name == 'pad_mode':
+#                 cfg_list.append(pad_mode_dict[param])
+#             elif param == True:
+#                 cfg_list.append(1)
+#             elif param == None or param == False:
+#                 cfg_list.append(0)
+#             elif param == "e":
+#                 cfg_list.append(math.exp(1))
+#             else:
+#                 if type(param) == int or type(param) == float:
+#                     cfg_list.append(
+#                         np.log1p(param) if param_name in to_log\
+#                         else param)
+#                 else:
+#                     raise ValueError(f"We got unknown parameter in config: {param_name}: {param}")
+#     return cfg_list

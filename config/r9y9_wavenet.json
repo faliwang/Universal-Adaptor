@@ -4,7 +4,7 @@
     "wav_config": {
         "sample_rate": 22050,
         "normalize_loudness": null,
-        "peak_norm": null,
+        "peak_norm": 1.0,
         "trim_silence": true,
         "trim_silence_threshold_in_db": 60,
         "trim_frame_size": 2048,
