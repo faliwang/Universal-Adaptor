@@ -53,15 +53,6 @@ if __name__ == '__main__':
 	random.shuffle(wav_list)
 	with open('shuffle.txt', 'w') as w:
 		w.write('\n'.join(['/'.join(x.split('/')[3:]) for x in wav_list]))
-	with open('sheet.tsv', 'w') as w:
-		c = 0
-		for x in sep:
-			for i in range(x):
-				w.write('/'.join(wav_list[c].split('/')[3:-1]))
-				c += 1
-				if i != x-1:
-					w.write('\t')
-			w.write('\n')
 
 	qs=[]
 	for i, x in enumerate(wav_list):

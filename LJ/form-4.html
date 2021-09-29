@@ -1,0 +1,1036 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>MOS 實驗表單 4</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/css/bootstrap.min.css"
+        integrity="sha384-VCmXjywReHh4PwowAiWNagnWcLhlEJLA5buUprzK8rxFgeH0kww/aWY76TfkUoSX" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            
+    <h1 class="display-4">MOS 實驗</h1>
+    <p class="lead">合成語音品質評估</p>
+    <hr class="my-4">
+    <p>
+        感謝您參與本次實驗！
+    </p>
+    <p>
+        在這個實驗中，我們使用電腦合成人類語音。
+        以下的音檔中，包含了真實的錄音以及合成的聲音。
+        請受試者使用耳機聆聽，並根據每個音檔與自然語音相像程度，給予以下幾種評分：
+        <ul>
+            <li>１（非常不好）</li>
+            <li>２（不好）</li>
+            <li>３（普通）</li>
+            <li>４（好）</li>
+            <li>５（非常好）</li>
+        </ul>
+    </p>
+
+        </div>
+    </div>
+
+    <div class="container" id="form_container">
+        <form id="theForm" action="https://script.google.com/macros/s/AKfycbzXHvjEi3_QMzBb2fS1IcHFi_lepxwmMHzdfRskbzGBo5tII49PLWyNdE221Qk2uoyvcA/exec" method="GET" onsubmit="return preventRepeatedSubmission();">
+            <div class="form-group">
+                <label for="name">姓名：</label>
+                <input class="form-control" type="text" inputmode="text" name="name" required>
+                <small class="form-text text-muted">必填*</small>
+            </div>
+            <div class="form-group">
+                <label for="mail">電子郵件：</label>
+                <input class="form-control" type="text" inputmode="email" placeholder="account@example.com" name="mail">
+                <small class="form-text text-muted">如果中獎，我們將以電子郵件通知您</small>
+            </div>
+            
+    
+        <div class="card form-group">
+            <div class="card-header">問題 94</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/src/LJ010-0254.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q94" id="q94_1" value="5" required>
+                    <label class="form-check-label" for="q94_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q94" id="q94_2" value="4" required>
+                    <label class="form-check-label" for="q94_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q94" id="q94_3" value="3" required>
+                    <label class="form-check-label" for="q94_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q94" id="q94_4" value="2" required>
+                    <label class="form-check-label" for="q94_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q94" id="q94_5" value="1" required>
+                    <label class="form-check-label" for="q94_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 95</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/hifigan_waveglow/LJ026-0122.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q95" id="q95_1" value="5" required>
+                    <label class="form-check-label" for="q95_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q95" id="q95_2" value="4" required>
+                    <label class="form-check-label" for="q95_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q95" id="q95_3" value="3" required>
+                    <label class="form-check-label" for="q95_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q95" id="q95_4" value="2" required>
+                    <label class="form-check-label" for="q95_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q95" id="q95_5" value="1" required>
+                    <label class="form-check-label" for="q95_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 96</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_wavernn/LJ016-0424.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q96" id="q96_1" value="5" required>
+                    <label class="form-check-label" for="q96_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q96" id="q96_2" value="4" required>
+                    <label class="form-check-label" for="q96_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q96" id="q96_3" value="3" required>
+                    <label class="form-check-label" for="q96_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q96" id="q96_4" value="2" required>
+                    <label class="form-check-label" for="q96_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q96" id="q96_5" value="1" required>
+                    <label class="form-check-label" for="q96_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 97</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/hifigan_hifigan/LJ023-0105.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q97" id="q97_1" value="5" required>
+                    <label class="form-check-label" for="q97_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q97" id="q97_2" value="4" required>
+                    <label class="form-check-label" for="q97_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q97" id="q97_3" value="3" required>
+                    <label class="form-check-label" for="q97_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q97" id="q97_4" value="2" required>
+                    <label class="form-check-label" for="q97_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q97" id="q97_5" value="1" required>
+                    <label class="form-check-label" for="q97_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 98</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_hifigan/LJ012-0094.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q98" id="q98_1" value="5" required>
+                    <label class="form-check-label" for="q98_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q98" id="q98_2" value="4" required>
+                    <label class="form-check-label" for="q98_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q98" id="q98_3" value="3" required>
+                    <label class="form-check-label" for="q98_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q98" id="q98_4" value="2" required>
+                    <label class="form-check-label" for="q98_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q98" id="q98_5" value="1" required>
+                    <label class="form-check-label" for="q98_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 99</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/direct/hifigan/LJ003-0167.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q99" id="q99_1" value="5" required>
+                    <label class="form-check-label" for="q99_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q99" id="q99_2" value="4" required>
+                    <label class="form-check-label" for="q99_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q99" id="q99_3" value="3" required>
+                    <label class="form-check-label" for="q99_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q99" id="q99_4" value="2" required>
+                    <label class="form-check-label" for="q99_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q99" id="q99_5" value="1" required>
+                    <label class="form-check-label" for="q99_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 100</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_melgan/LJ026-0122.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q100" id="q100_1" value="5" required>
+                    <label class="form-check-label" for="q100_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q100" id="q100_2" value="4" required>
+                    <label class="form-check-label" for="q100_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q100" id="q100_3" value="3" required>
+                    <label class="form-check-label" for="q100_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q100" id="q100_4" value="2" required>
+                    <label class="form-check-label" for="q100_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q100" id="q100_5" value="1" required>
+                    <label class="form-check-label" for="q100_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 101</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/melgan_waveglow/LJ020-0067.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q101" id="q101_1" value="5" required>
+                    <label class="form-check-label" for="q101_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q101" id="q101_2" value="4" required>
+                    <label class="form-check-label" for="q101_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q101" id="q101_3" value="3" required>
+                    <label class="form-check-label" for="q101_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q101" id="q101_4" value="2" required>
+                    <label class="form-check-label" for="q101_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q101" id="q101_5" value="1" required>
+                    <label class="form-check-label" for="q101_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 102</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/wavernn_wavernn/LJ002-0111.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q102" id="q102_1" value="5" required>
+                    <label class="form-check-label" for="q102_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q102" id="q102_2" value="4" required>
+                    <label class="form-check-label" for="q102_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q102" id="q102_3" value="3" required>
+                    <label class="form-check-label" for="q102_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q102" id="q102_4" value="2" required>
+                    <label class="form-check-label" for="q102_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q102" id="q102_5" value="1" required>
+                    <label class="form-check-label" for="q102_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 103</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/hifigan_hifigan/LJ003-0167.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q103" id="q103_1" value="5" required>
+                    <label class="form-check-label" for="q103_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q103" id="q103_2" value="4" required>
+                    <label class="form-check-label" for="q103_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q103" id="q103_3" value="3" required>
+                    <label class="form-check-label" for="q103_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q103" id="q103_4" value="2" required>
+                    <label class="form-check-label" for="q103_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q103" id="q103_5" value="1" required>
+                    <label class="form-check-label" for="q103_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 104</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/wavernn_wavernn/LJ015-0157.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q104" id="q104_1" value="5" required>
+                    <label class="form-check-label" for="q104_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q104" id="q104_2" value="4" required>
+                    <label class="form-check-label" for="q104_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q104" id="q104_3" value="3" required>
+                    <label class="form-check-label" for="q104_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q104" id="q104_4" value="2" required>
+                    <label class="form-check-label" for="q104_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q104" id="q104_5" value="1" required>
+                    <label class="form-check-label" for="q104_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 105</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/wavernn_hifigan/LJ032-0118.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q105" id="q105_1" value="5" required>
+                    <label class="form-check-label" for="q105_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q105" id="q105_2" value="4" required>
+                    <label class="form-check-label" for="q105_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q105" id="q105_3" value="3" required>
+                    <label class="form-check-label" for="q105_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q105" id="q105_4" value="2" required>
+                    <label class="form-check-label" for="q105_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q105" id="q105_5" value="1" required>
+                    <label class="form-check-label" for="q105_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 106</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/src/LJ014-0034.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q106" id="q106_1" value="5" required>
+                    <label class="form-check-label" for="q106_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q106" id="q106_2" value="4" required>
+                    <label class="form-check-label" for="q106_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q106" id="q106_3" value="3" required>
+                    <label class="form-check-label" for="q106_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q106" id="q106_4" value="2" required>
+                    <label class="form-check-label" for="q106_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q106" id="q106_5" value="1" required>
+                    <label class="form-check-label" for="q106_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 107</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/melgan_waveglow/LJ023-0105.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q107" id="q107_1" value="5" required>
+                    <label class="form-check-label" for="q107_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q107" id="q107_2" value="4" required>
+                    <label class="form-check-label" for="q107_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q107" id="q107_3" value="3" required>
+                    <label class="form-check-label" for="q107_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q107" id="q107_4" value="2" required>
+                    <label class="form-check-label" for="q107_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q107" id="q107_5" value="1" required>
+                    <label class="form-check-label" for="q107_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 108</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/melgan_waveglow/LJ018-0309.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q108" id="q108_1" value="5" required>
+                    <label class="form-check-label" for="q108_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q108" id="q108_2" value="4" required>
+                    <label class="form-check-label" for="q108_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q108" id="q108_3" value="3" required>
+                    <label class="form-check-label" for="q108_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q108" id="q108_4" value="2" required>
+                    <label class="form-check-label" for="q108_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q108" id="q108_5" value="1" required>
+                    <label class="form-check-label" for="q108_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 109</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/melgan_hifigan/LJ015-0157.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q109" id="q109_1" value="5" required>
+                    <label class="form-check-label" for="q109_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q109" id="q109_2" value="4" required>
+                    <label class="form-check-label" for="q109_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q109" id="q109_3" value="3" required>
+                    <label class="form-check-label" for="q109_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q109" id="q109_4" value="2" required>
+                    <label class="form-check-label" for="q109_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q109" id="q109_5" value="1" required>
+                    <label class="form-check-label" for="q109_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 110</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_melgan/LJ012-0094.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q110" id="q110_1" value="5" required>
+                    <label class="form-check-label" for="q110_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q110" id="q110_2" value="4" required>
+                    <label class="form-check-label" for="q110_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q110" id="q110_3" value="3" required>
+                    <label class="form-check-label" for="q110_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q110" id="q110_4" value="2" required>
+                    <label class="form-check-label" for="q110_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q110" id="q110_5" value="1" required>
+                    <label class="form-check-label" for="q110_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 111</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/hifigan_wavernn/LJ002-0111.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q111" id="q111_1" value="5" required>
+                    <label class="form-check-label" for="q111_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q111" id="q111_2" value="4" required>
+                    <label class="form-check-label" for="q111_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q111" id="q111_3" value="3" required>
+                    <label class="form-check-label" for="q111_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q111" id="q111_4" value="2" required>
+                    <label class="form-check-label" for="q111_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q111" id="q111_5" value="1" required>
+                    <label class="form-check-label" for="q111_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 112</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/wavernn_wavernn/LJ020-0067.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q112" id="q112_1" value="5" required>
+                    <label class="form-check-label" for="q112_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q112" id="q112_2" value="4" required>
+                    <label class="form-check-label" for="q112_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q112" id="q112_3" value="3" required>
+                    <label class="form-check-label" for="q112_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q112" id="q112_4" value="2" required>
+                    <label class="form-check-label" for="q112_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q112" id="q112_5" value="1" required>
+                    <label class="form-check-label" for="q112_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 113</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/wavernn_melgan/LJ014-0034.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q113" id="q113_1" value="5" required>
+                    <label class="form-check-label" for="q113_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q113" id="q113_2" value="4" required>
+                    <label class="form-check-label" for="q113_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q113" id="q113_3" value="3" required>
+                    <label class="form-check-label" for="q113_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q113" id="q113_4" value="2" required>
+                    <label class="form-check-label" for="q113_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q113" id="q113_5" value="1" required>
+                    <label class="form-check-label" for="q113_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 114</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_waveglow/LJ026-0122.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q114" id="q114_1" value="5" required>
+                    <label class="form-check-label" for="q114_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q114" id="q114_2" value="4" required>
+                    <label class="form-check-label" for="q114_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q114" id="q114_3" value="3" required>
+                    <label class="form-check-label" for="q114_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q114" id="q114_4" value="2" required>
+                    <label class="form-check-label" for="q114_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q114" id="q114_5" value="1" required>
+                    <label class="form-check-label" for="q114_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 115</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/direct/melgan/LJ020-0067.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q115" id="q115_1" value="5" required>
+                    <label class="form-check-label" for="q115_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q115" id="q115_2" value="4" required>
+                    <label class="form-check-label" for="q115_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q115" id="q115_3" value="3" required>
+                    <label class="form-check-label" for="q115_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q115" id="q115_4" value="2" required>
+                    <label class="form-check-label" for="q115_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q115" id="q115_5" value="1" required>
+                    <label class="form-check-label" for="q115_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 116</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/hifigan_hifigan/LJ020-0067.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q116" id="q116_1" value="5" required>
+                    <label class="form-check-label" for="q116_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q116" id="q116_2" value="4" required>
+                    <label class="form-check-label" for="q116_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q116" id="q116_3" value="3" required>
+                    <label class="form-check-label" for="q116_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q116" id="q116_4" value="2" required>
+                    <label class="form-check-label" for="q116_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q116" id="q116_5" value="1" required>
+                    <label class="form-check-label" for="q116_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 117</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/melgan_waveglow/LJ005-0294.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q117" id="q117_1" value="5" required>
+                    <label class="form-check-label" for="q117_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q117" id="q117_2" value="4" required>
+                    <label class="form-check-label" for="q117_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q117" id="q117_3" value="3" required>
+                    <label class="form-check-label" for="q117_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q117" id="q117_4" value="2" required>
+                    <label class="form-check-label" for="q117_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q117" id="q117_5" value="1" required>
+                    <label class="form-check-label" for="q117_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 118</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_melgan/LJ020-0067.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q118" id="q118_1" value="5" required>
+                    <label class="form-check-label" for="q118_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q118" id="q118_2" value="4" required>
+                    <label class="form-check-label" for="q118_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q118" id="q118_3" value="3" required>
+                    <label class="form-check-label" for="q118_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q118" id="q118_4" value="2" required>
+                    <label class="form-check-label" for="q118_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q118" id="q118_5" value="1" required>
+                    <label class="form-check-label" for="q118_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 119</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/wavernn_hifigan/LJ018-0309.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q119" id="q119_1" value="5" required>
+                    <label class="form-check-label" for="q119_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q119" id="q119_2" value="4" required>
+                    <label class="form-check-label" for="q119_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q119" id="q119_3" value="3" required>
+                    <label class="form-check-label" for="q119_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q119" id="q119_4" value="2" required>
+                    <label class="form-check-label" for="q119_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q119" id="q119_5" value="1" required>
+                    <label class="form-check-label" for="q119_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 120</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/hifigan_waveglow/LJ023-0105.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q120" id="q120_1" value="5" required>
+                    <label class="form-check-label" for="q120_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q120" id="q120_2" value="4" required>
+                    <label class="form-check-label" for="q120_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q120" id="q120_3" value="3" required>
+                    <label class="form-check-label" for="q120_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q120" id="q120_4" value="2" required>
+                    <label class="form-check-label" for="q120_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q120" id="q120_5" value="1" required>
+                    <label class="form-check-label" for="q120_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 121</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/melgan_wavernn/LJ016-0424.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q121" id="q121_1" value="5" required>
+                    <label class="form-check-label" for="q121_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q121" id="q121_2" value="4" required>
+                    <label class="form-check-label" for="q121_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q121" id="q121_3" value="3" required>
+                    <label class="form-check-label" for="q121_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q121" id="q121_4" value="2" required>
+                    <label class="form-check-label" for="q121_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q121" id="q121_5" value="1" required>
+                    <label class="form-check-label" for="q121_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 122</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_hifigan/LJ014-0034.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q122" id="q122_1" value="5" required>
+                    <label class="form-check-label" for="q122_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q122" id="q122_2" value="4" required>
+                    <label class="form-check-label" for="q122_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q122" id="q122_3" value="3" required>
+                    <label class="form-check-label" for="q122_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q122" id="q122_4" value="2" required>
+                    <label class="form-check-label" for="q122_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q122" id="q122_5" value="1" required>
+                    <label class="form-check-label" for="q122_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 123</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/waveglow_hifigan/LJ020-0067.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q123" id="q123_1" value="5" required>
+                    <label class="form-check-label" for="q123_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q123" id="q123_2" value="4" required>
+                    <label class="form-check-label" for="q123_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q123" id="q123_3" value="3" required>
+                    <label class="form-check-label" for="q123_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q123" id="q123_4" value="2" required>
+                    <label class="form-check-label" for="q123_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q123" id="q123_5" value="1" required>
+                    <label class="form-check-label" for="q123_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="card form-group">
+            <div class="card-header">問題 124</div>
+            <div class="card-body">
+                <p>
+                    <audio controls src="../wavs/lj/w_adapt/hifigan_melgan/LJ008-0309.wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q124" id="q124_1" value="5" required>
+                    <label class="form-check-label" for="q124_1">５（非常好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q124" id="q124_2" value="4" required>
+                    <label class="form-check-label" for="q124_2">４（好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q124" id="q124_3" value="3" required>
+                    <label class="form-check-label" for="q124_3">３（普通）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q124" id="q124_4" value="2" required>
+                    <label class="form-check-label" for="q124_4">２（不好）</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="q124" id="q124_5" value="1" required>
+                    <label class="form-check-label" for="q124_5">１（非常不好）</label>
+                </div>
+            </div>
+        </div>
+    
+
+            <input type="text" name="formid" value="1" hidden>
+            <input type="text" name="thank" value="再次謝謝您參與本次實驗！" hidden>
+            <input class="btn btn-info btn-lg" type="submit" value="提交結果" id="submitBtn">
+            <p class="text-muted">
+                <small>如果提交結果時發現繳不出去，請回頭檢查是否有填入姓名、是否每一題都有作答到，謝謝。</small>
+            </p>
+        </form>
+    </div>
+
+    <div class="container" style="padding-top: 60px;">
+        <p class="text-center text-muted">&copy; 台大語音實驗室</p>
+    </div>
+
+    <script type="text/javascript">
+        function preventRepeatedSubmission() {
+            document.getElementById('submitBtn').disabled = true;
+            setTimeout("submitBtn.disabled=false;", 5000);
+            return true;
+        };
+    </script>
+</body>
+
+</html>
