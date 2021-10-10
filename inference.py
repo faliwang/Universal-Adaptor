@@ -1,31 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import os
-import json
+import argparse
 
-from numpy.lib.arraysetops import isin
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
 from tqdm.notebook import tqdm
+from multiprocessing import cpu_count
 
 from dataset import InferenceDataset, get_configs
 from extract import Extractor
 import adaptor
-
-
-def parse_args():
-    """arguments"""
-    config = {
-        "data_dir": "/work/b07502172/universal_adaptor/trial_vctk/mels/gt_trans",
-        "data_dir": "/work/b07502172/universal_adaptor/experiments_cutconfig/festvox_testing/mels/gt_trans",
-        "config_dir": "./config",
-        "exp_name": 'unet_affine_scheduler',
-        "out_dir": "/work/b07502172/universal_adaptor/results_vctk",
-        "num_workers": 4,
-    }
-
-    return config
 
 
 def main(
@@ -55,11 +41,6 @@ def main(
     )
     print(f"[Info]: Finish loading data!",flush = True)
 
-    # model = Refiner_UNet_with_config(n_channels=20, num_layers=3, base=16, bilinear=False, res_add=True).to(device)
-    # model = Refiner_ResNet_with_config(
-    #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
-    #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
-    # model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
     model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=8, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
     model_path = os.path.join(out_dir, 'ckpts', f'{exp_name}.ckpt')
     model.load_state_dict(torch.load(model_path))
@@ -86,8 +67,6 @@ def main(
                 preds = preds.cpu().numpy()
             for pred, model_name, input_name in zip(preds, model_names, input_names):
                 input_name = input_name[:-4]
-                # if model_name.split('_')[-1] == 'wavernn':
-                #     pred = np.clip(pred, 0, 1)
                 tgt_ext = None
                 for ext, config_name in extractors:
                     if config_name == model_name.split('_')[-1]:
@@ -99,4 +78,18 @@ def main(
 
 
 if __name__ == "__main__":
-  main(**parse_args())
+    parser = argparse.ArgumentParser(
+        description='configs for training')  
+    parser.add_argument('--data_dir', '-d', metavar='DATA',
+                        default='data', help='The dataset folder')
+    parser.add_argument('--config_dir', '-c', metavar='FILE', default='./config',
+                        help='The config file for Extractor')
+    parser.add_argument('--out_dir', '-o', metavar='OUT', default='./results',
+                        help='Output directory')
+    parser.add_argument('--exp_name', '-e', metavar='EXP', default='./exp',
+                        help='Name of experiments')
+    parser.add_argument('--num_workers', '-n', metavar='N', type=int,
+                        default=cpu_count()-1,
+                        help='The number of worker threads for preprocessing')
+    args = parser.parse_args()
+    main(**vars(args))

@@ -3,24 +3,26 @@
 import os
 import torch
 import math
+import argparse
 import torch.nn as nn
+import numpy as np
+
 from pathlib import Path
+from multiprocessing import cpu_count
 from tqdm import tqdm
 from torch.optim import AdamW
 from torch.utils.data import Dataset, DataLoader, random_split
-from torch.nn.utils.rnn import pad_sequence
-from torch.optim import Optimizer
-from torch.optim.lr_scheduler import LambdaLR
 from tensorboardX import SummaryWriter 
  
 
 from dataset import AudioDataset
 import adaptor
+from utils.plot import plot_spec
 
 
-def get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length):
+def get_dataloader(data_dir, preprocess_dir, fix_config_dir, batch_size, n_workers, segment_length):
     """Generate dataloader"""
-    dataset = AudioDataset(data_dir, data_type, config_dir, segment_len=segment_length)
+    dataset = AudioDataset(data_dir, preprocess_dir, fix_config_dir, segment_len=segment_length)
 
     # Split dataset into training dataset and validation dataset
     trainlen = int(0.9 * len(dataset))
@@ -48,58 +50,6 @@ def get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segme
     return train_loader, valid_loader
 
 
-
-"""# Learning rate schedule
-- For transformer architecture, the design of learning rate schedule is different from that of CNN.
-- Previous works show that the warmup of learning rate is useful for training models with transformer architectures.
-- The warmup schedule
-  - Set learning rate to 0 in the beginning.
-  - The learning rate increases linearly from 0 to initial learning rate during warmup period.
-"""
-
-def get_cosine_schedule_with_warmup(
-    optimizer: Optimizer,
-    num_warmup_steps: int,
-    num_training_steps: int,
-    num_cycles: float = 0.5,
-    last_epoch: int = -1,
-):
-    """
-    Create a schedule with a learning rate that decreases following the values of the cosine function between the
-    initial lr set in the optimizer to 0, after a warmup period during which it increases linearly between 0 and the
-    initial lr set in the optimizer.
-
-    Args:
-        optimizer (:class:`~torch.optim.Optimizer`):
-        The optimizer for which to schedule the learning rate.
-        num_warmup_steps (:obj:`int`):
-        The number of steps for the warmup phase.
-        num_training_steps (:obj:`int`):
-        The total number of training steps.
-        num_cycles (:obj:`float`, `optional`, defaults to 0.5):
-        The number of waves in the cosine schedule (the defaults is to just decrease from the max value to 0
-        following a half-cosine).
-        last_epoch (:obj:`int`, `optional`, defaults to -1):
-        The index of the last epoch when resuming training.
-
-    Return:
-        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.
-    """
-
-    def lr_lambda(current_step):
-        # Warmup
-        if current_step < num_warmup_steps:
-            return float(current_step) / float(max(1, num_warmup_steps))
-        # decadence
-        progress = float(current_step - num_warmup_steps) / float(
-        max(1, num_training_steps - num_warmup_steps)
-        )
-        return max(
-        0.0, 0.5 * (1.0 + math.cos(math.pi * float(num_cycles) * 2.0 * progress))
-        )
-
-    return LambdaLR(optimizer, lr_lambda, last_epoch)
-
 """# Model Function
 - Model forward function.
 """
@@ -121,22 +71,11 @@ def model_fn(batch, model, criterion, device):
     else:
         ma = gt.max(1, True)[0].max(2, True)[0]
         mi = gt.min(1, True)[0].min(2, True)[0]
-        outs = (outs-mi)/(ma-mi)
-        gt = (gt-mi)/(ma-mi)
-        loss = criterion(outs, gt)
+        loss = criterion(
+                (outs-mi)/(ma-mi),
+                (gt-mi)/(ma-mi))
 
-    return loss
-
-
-class BCELoss(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.criterion = nn.BCELoss()
-    
-    def forward(self, output, gt):
-        _output = torch.sigmoid(output)
-        _gt = torch.sigmoid(gt)
-        return self.criterion(_output, _gt)
+    return loss, outs
 
 
 """# Validate
@@ -152,7 +91,7 @@ def valid(dataloader, model, criterion, device):
 
     for i, batch in enumerate(dataloader):
         with torch.no_grad():
-            loss = model_fn(batch, model, criterion, device)
+            loss, outs = model_fn(batch, model, criterion, device)
             running_loss += loss.item()
 
         pbar.update(dataloader.batch_size)
@@ -168,59 +107,38 @@ def valid(dataloader, model, criterion, device):
 
 """# Main function"""
 
-def parse_args():
-    """arguments"""
-    config = {
-        "data_dir": "/work/b07502172/corpus/VCTK_mels",
-        "data_type": "npy",
-        "config_dir": "./config",
-        "out_dir": "/work/b07502172/universal_adaptor/results_vctk",
-        'exp_name': 'unet_affine_log',
-        "batch_size": 32,
-        "n_workers": 4,
-        "segment_length": 200,
-        "valid_steps": 12500,
-        "warmup_steps": 1000,
-    }
-
-    return config
-
 
 def main(
     data_dir,
-    data_type,
-    config_dir,
+    preprocess_dir,
+    fix_config_dir,
     out_dir,
     exp_name,
     batch_size,
     n_workers,
     segment_length,
     valid_steps,
-    warmup_steps,
 ):
     """Main function."""
-    print(f"[Info]: Doing {exp_name} training!")
+    print(f"[Info]: Doing {exp_name} experiment!")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[Info]: Use {device} now!")
 
-    train_loader, valid_loader = get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length)
+    train_loader, valid_loader = get_dataloader(data_dir, preprocess_dir, fix_config_dir, batch_size, n_workers, segment_length)
     train_iterator = iter(train_loader)
     print(f"[Info]: Finish loading data!",flush = True)
 
-    save_steps = valid_steps * 2
+    save_steps = valid_steps * 1
     total_steps = valid_steps * 100
-    # model = Refiner_ResNet_with_config(
-    #     n_channels=20, block='bottleneck', layers=[1, 1, 1], planes=[64,64,64], 
-    #     block_resadd=True, output_layer=True, groups=32, width_per_group=4).to(device)
-    # model = adaptor.Refiner_R2AttUNet_with_config(n_channels=1, config_len=27, t=2, layers=5, base=64, resadd=False).to(device)
-    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=27, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
+    model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=8, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
     ckpt_file = os.path.join(out_dir, 'ckpts', f"{exp_name}.ckpt")
     if os.path.isfile(ckpt_file):
         model.load_state_dict(torch.load(ckpt_file))
         print("[Info]: Load model checkpoint!",flush = True)
     criterion = nn.L1Loss().to(device)
     optimizer = AdamW(model.parameters(), lr=1e-3)
-    scheduler = get_cosine_schedule_with_warmup(optimizer, warmup_steps, total_steps)
+    scheduler = torch.optim.lr_scheduler.StepLR(
+       optimizer, step_size = valid_steps * 50, gamma = 0.5)
     print(f"[Info]: Finish creating model!",flush = True)
 
     if not os.path.exists(out_dir):
@@ -238,8 +156,8 @@ def main(
 
     for step in range(total_steps):
         # change data
-        if (step + 1) % valid_steps == 1 and step != 0 and data_type == 'wav' and config_dir == None:
-            train_loader, valid_loader = get_dataloader(data_dir, data_type, config_dir, batch_size, n_workers, segment_length)
+        if (step + 1) % valid_steps == 1 and step != 0:
+            train_loader, valid_loader = get_dataloader(data_dir, preprocess_dir, fix_config_dir, batch_size, n_workers, segment_length)
             train_iterator = iter(train_loader)
             print(f"[Info]: Finish Reloading data!",flush = True)
             
@@ -250,7 +168,7 @@ def main(
             train_iterator = iter(train_loader)
             batch = next(train_iterator)
 
-        loss = model_fn(batch, model, criterion, device)
+        loss, outs = model_fn(batch, model, criterion, device)
         batch_loss = loss.item()
         writer.add_scalar('training_loss', loss, step)
 
@@ -273,6 +191,12 @@ def main(
 
             valid_loss = valid(valid_loader, model, criterion, device)
             writer.add_scalar('valid_loss', valid_loss, step)
+            writer.add_image('input',
+                plot_spec(batch[0][0].detach().cpu().numpy()), step)
+            writer.add_image('target',
+                plot_spec(batch[1][0].detach().cpu().numpy()), step)
+            writer.add_image('output',
+                plot_spec(outs[0].detach().cpu().numpy()), step)
 
             # keep the best model
             if valid_loss < best_loss:
@@ -280,6 +204,7 @@ def main(
                 best_state_dict = model.state_dict()
 
             pbar = tqdm(total=valid_steps, ncols=0, desc="Train", unit=" step")
+            print(f"\n[Info]: Current lr:{optimizer.param_groups[0]['lr']}", flush = True)
 
         # Save the best model so far.
         if (step + 1) % save_steps == 0 and best_state_dict is not None:
@@ -294,4 +219,26 @@ def main(
 
 
 if __name__ == "__main__":
-    main(**parse_args())
+    parser = argparse.ArgumentParser(
+        description='configs for training')  
+    parser.add_argument('--data_dir', '-d', metavar='DATA',
+                        default='data', help='The dataset folder')
+    parser.add_argument('--preprocess_dir', '-p', metavar='DATA',
+                        default='res', help='The preprocessed folder')
+    parser.add_argument('--fix_config_dir', '-c', metavar='FILE', default='./config',
+                        help='The config file for Extractor')
+    parser.add_argument('--out_dir', '-o', metavar='OUT', default='./results',
+                        help='Output directory')
+    parser.add_argument('--exp_name', '-e', metavar='EXP', default='./exp',
+                        help='Name of experiments')
+    parser.add_argument('--n_workers', '-n', metavar='N', type=int,
+                        default=cpu_count()-1,
+                        help='The number of worker threads for preprocessing')
+    parser.add_argument('--batch_size', '-b', metavar='BATCH', type=int,
+                        default=32,  help='training batch size')
+    parser.add_argument('--segment_length', '-s', metavar='SEG', type=int,
+                        default=200,  help='training segment length')
+    parser.add_argument('--valid_steps', '-v', metavar='VALID', type=int,
+                        default=3600,  help='training segment length')
+    args = parser.parse_args()
+    main(**vars(args))
