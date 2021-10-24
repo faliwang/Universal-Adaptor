@@ -129,6 +129,10 @@ a {
     display: block;
 }
 
+.table-container{
+	font-size: 20px;
+}
+
 .content-title{
     font-size: 30px;
     color: rgb(22, 38, 67);
