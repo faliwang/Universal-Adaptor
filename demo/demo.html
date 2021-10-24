@@ -237,7 +237,7 @@
                     waveColor: 'violet',
                     progressColor: 'purple',
                 });
-                wavesurfer_lj[j].load("./wavs/LJSpeech/" + utt_scenarios[j] + "/" + lj_source + '-' + lj_target + ".wav");
+                wavesurfer_lj[j].load("./wavs/LJSpeech/" + utt_scenarios[j] + "/" + lj_source + "-" + lj_target + ".wav");
             }
 
             $("#tts-div").empty();
@@ -248,7 +248,7 @@
                     waveColor: 'violet',
                     progressColor: 'purple',
                 });
-                wavesurfer_tts[j].load("./wavs/tts/" + utt_scenarios[j] + "/" + tts_source + '-' + tts_target + ".wav");
+                wavesurfer_tts[j].load("./wavs/tts/" + utt_scenarios[j] + "/" + tts_source + "-" + tts_target + ".wav");
             }
 
             $("#cmu-div").empty();
@@ -259,7 +259,7 @@
                     waveColor: 'violet',
                     progressColor: 'purple',
                 });
-                wavesurfer_cmu[j].load("./wavs/CMU/" + cmu_speaker + "/" + utt_scenarios[j] + "/" + cmu_source + '-' + cmu_target + ".wav");
+                wavesurfer_cmu[j].load("./wavs/CMU/" + cmu_speaker + "/" + utt_scenarios[j] + "/" + cmu_source + "-" + cmu_target + ".wav");
             }
 
             unlock();
@@ -419,7 +419,7 @@
                 $("#lj_target").append('<option value="lj_tgt4">configuration 4 (MelGAN)</option>');
                 $("#lj_target").val(lj_target);
 
-                $("#ljspeech-div").append(createTable("tts"));
+                $("#ljspeech-div").append(createTable("lj"));
                 
                 for (var j = 0; j < utt_scenarios.length; j++) {
                     wavesurfer_lj[j] = WaveSurfer.create({
