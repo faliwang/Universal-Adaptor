@@ -32,7 +32,6 @@ n_workers=4
 valid_steps=3600
 
 
-
 if [[ $stage -le  0 ]]; then
     echo "Stage 0: Converting files in datasets into intermediate wav files"
     CUDA_VISIBLE_DEVICES=$id $python_path rand_prep.py \
@@ -46,7 +45,7 @@ fi
 if [[ $stage -le 1 ]]; then
     echo "Stage 1: Training"
     CUDA_VISIBLE_DEVICES=$id $python_path train.py \
-		--data $data_dir \
+        --data $data_dir \
         --preprocess_dir $preprocess_dir \
         --out_dir $output_dir \
         --exp_name $exp_name \
@@ -56,11 +55,12 @@ if [[ $stage -le 1 ]]; then
         --valid_steps $valid_steps
 fi
 
+
 if [[ $stage -le 2 ]]; then
-	echo "Stage 2 : Evaluation"
-	CUDA_VISIBLE_DEVICES=$id $python_path inference.py \
-		--data_dir $test_dir \
-		--out_dir $output_dir \
-		--exp_name $exp_name \
+    echo "Stage 2 : Evaluation"
+    CUDA_VISIBLE_DEVICES=$id $python_path inference.py \
+        --data_dir $test_dir \
+        --out_dir $output_dir \
+        --exp_name $exp_name \
         --num_workers $n_workers
 fi
