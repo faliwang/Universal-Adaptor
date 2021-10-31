@@ -1,0 +1,7 @@
+numpy==1.19.0
+librosa==0.7.2
+matplotlib
+scipy
+tensorboardX==2.4
+torch>=1.7.0
+tqdm

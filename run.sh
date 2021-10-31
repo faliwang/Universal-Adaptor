@@ -13,13 +13,13 @@ preprocess_dir="./res"
 # dir that puts mels you want to inference
 test_dir="../../mels/gt_trans"
 # output dir, including ckpt, log, and inferenced mels
-output_dir="/work/b07502172/universal_adaptor/results_libritts_random"
+output_dir="./results"
 # python path you want to use
 python_path=python3
 # Controls from which stage to start
-stage=2  
+stage=0  
 # Controls the directory name associated to the experiment
-exp_name="unet_libritts_cutconfig" 
+exp_name="unet_libritts" 
 # gpu id
 id=0
 

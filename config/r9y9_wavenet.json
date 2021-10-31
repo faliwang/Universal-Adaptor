@@ -1,6 +1,6 @@
 {
-    "github_repo": "https://github.com/fatchord/WaveRNN",
-    "commit": "3595219b2f2f5353f0867a7bb59abcb15aba8831",
+    "github_repo": "https://github.com/r9y9/wavenet_vocoder",
+    "commit": "a35fff76ea3687b05e1a10023cad3f7f64fa25a3",
     "wav_config": {
         "sample_rate": 22050,
         "normalize_loudness": null,
