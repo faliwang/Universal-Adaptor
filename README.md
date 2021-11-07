@@ -2,7 +2,7 @@
 
 Official repository for 'Universal Adaptor: Converting Mel-Spectrograms Between Different Configurations for Speech Synthesis'
 
-![model structure](./pipeline_new5.png)
+![model structure](./figures/pipeline-github.png)
 
 **Abstract :**
 Most recent TTS systems are composed of a synthesizer and a vocoder. However, the existing synthesizers and vocoders can only be matched to a specific configuration. Hence, we can't combine arbitrary synthesizers and vocoders together to form a complete TTS system, not to mention applying to a newly developed model. In this paper, we proposed a universal adaptor, which takes a Mel-spectogram parametrized by the source configuration and converts it into a Mel-spectrogram parametrized by the target configuration, as long as we feed in the source configuration and target configuration. Our experiments have shown that the quality of speeches synthesized from our output of the universal adaptor is comparable to those synthesized from ground truth Mel-spectrogram. Moreover, our universal adaptor can be applied in the recent TTS systems and in multi-speaker speech synthesis.
@@ -46,16 +46,19 @@ Then, you can find the results in your output directory.
 1. LJSpeech
 
 Source Configuration: cfg1, cfg2, cfg3, cfg4
+
 Target Configuration (Vocoder): cfg1(WaveRNN), cfg2(WaveGLOW), cfg3(HiFiGAN), cfg4(MelGAN)
 
 2. Text-to-Speech
 
 Source Configuration (TTS): cfg1(Tacotron), cfg2(Tacotron 2), cfg3(FastSpeech 2)
+
 Target Configuration (Vocoder): cfg1(WaveRNN), cfg2(WaveGLOW), cfg3(HiFiGAN), cfg4(MelGAN)
 
 3. CMU_ARCTIC
 
 Source Configuration: cfg1, cfg2, cfg3, cfg4
+
 Target Conifguration (Vocoder): cfg3(HiFiGAN)
 
 ### Reference Repositories for Configurations
