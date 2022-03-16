@@ -1,6 +1,4 @@
-# Acoustic-feature-converter
-
-Official repository for 'Universal Adaptor: Converting Mel-Spectrograms Between Different Configurations for Speech Synthesis'
+# Universal Adaptor: Converting Mel-Spectrograms Between Different Configurations for Speech Synthesis
 
 ![model structure](./figures/pipeline-github.png)
 
