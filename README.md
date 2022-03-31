@@ -1,7 +1,7 @@
 # Acoustic-feature-converter
 ## Demo Link
 
-- https://bogihsu.github.io/Acoustic-feature-converter/demo/demo.html
+- https://bogihsu.github.io/Universal-Adaptor/demo/demo.html
 
 ## MOS-Exp
 
