@@ -15,7 +15,7 @@ class Extractor:
     def load(self, path):
         y = audio.load_wav(path, self.wav_config["sample_rate"])
         if self.wav_config["normalize_loudness"] is not None:
-            pass
+            y = audio.normalize_loudness(y, self.wav_config["sample_rate"], self.wav_config["normalize_loudness"])
         if self.wav_config["peak_norm"] is not None:
             y = self.wav_config["peak_norm"]*y/np.abs(y).max()
         if np.abs(y).max() > 1:
@@ -31,7 +31,7 @@ class Extractor:
         if self.wav_config["highpass_cutoff"] > 0.0:
             y = audio.low_cut_filter(y, self.wav_config["sample_rate"], self.wav_config["highpass_cutoff"])
         if self.spec_config["preemphasis"] is not None:
-            pass
+            y = audio.preemphasis(y, self.spec_config["preemphasis"])
         D = audio.stft(y, self.spec_config)
         S = np.abs(D)
         S = audio.stft_power(S, self.spec_config["stft_power"])

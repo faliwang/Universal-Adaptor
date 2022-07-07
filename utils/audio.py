@@ -1,6 +1,7 @@
 import librosa
 import numpy as np
 from scipy.io import wavfile
+import pyloudnorm as pyln
 
 
 def load_wav(path, sample_rate):
@@ -11,6 +12,13 @@ def load_wav(path, sample_rate):
 def save_wav(y, path, sample_rate):
     y *= 32767/max(0.01, np.max(np.abs(y)))
     wavfile.write(path, sample_rate, y.astype(np.int16))
+
+
+def normalize_loudness(wav, sr, db):
+    meter = pyln.Meter(sr)
+    loudness = meter.integrated_loudness(wav)
+    wav = pyln.normalize.loudness(wav, loudness, db)
+    return wav
 
 
 def trim_silence(y, wav_config):
@@ -43,6 +51,10 @@ def low_cut_filter(x, fs, cutoff=70):
     lcf_x = lfilter(fil, 1, x)
 
     return lcf_x
+
+
+def preemphasis(y, preemph):
+    return librosa.effects.preemphasis(y, coef=preemph)
 
 
 def stft(y, spec_config):
@@ -127,13 +139,25 @@ def db_to_amp(S, post_config):
 def normalize(S, post_config):
     ref_level_db = post_config["ref_level_db"]
     min_level_db = post_config["min_level_db"]
-    return np.clip((S-ref_level_db-min_level_db)/-min_level_db, 0, 1)
+    top_level_db = post_config["top_level_db"]
+    S = S - ref_level_db
+    if min_level_db is not None:
+        S = (S-min_level_db)/-min_level_db
+    if top_level_db is not None:
+        S = np.maximum(S, -top_level_db) / top_level_db
+    return S
 
 
 def denormalize(S, post_config):
     ref_level_db = post_config["ref_level_db"]
     min_level_db = post_config["min_level_db"]
-    return (np.clip(S, 0, 1)*-min_level_db)+min_level_db+ref_level_db
+    top_level_db = post_config["top_level_db"]
+    if min_level_db is not None:
+        S = (S * -min_level_db) + min_level_db
+    if top_level_db is not None:
+        S = S * top_level_db
+    S += ref_level_db
+    return S
 
 
 def stft_to_wav(S, spec_config, n_iter):

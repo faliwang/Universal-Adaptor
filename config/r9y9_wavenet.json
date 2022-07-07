@@ -33,6 +33,7 @@
         "log_factor": 1,
         "normalize_spec": false,
         "ref_level_db": 0,
-        "min_level_db": -100
+        "min_level_db": -100,
+        "top_level_db": null
     }
 }
