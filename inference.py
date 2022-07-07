@@ -43,7 +43,7 @@ def main(
 
     model = adaptor.Refiner_UNet_affine(n_channels=1, config_len=8, num_layers=4, base=16, bilinear=False, res_add=True).to(device)
     if 'ckpts' not in out_dir:
-        model_path = os.path.join(os.cwd, 'models', 'adaptor.ckpt')
+        model_path = os.path.join(os.getcwd(), 'models', 'adaptor.ckpt')
     else:
         model_path = os.path.join(out_dir, 'ckpts', f'{exp_name}.ckpt')
     model.load_state_dict(torch.load(model_path))
