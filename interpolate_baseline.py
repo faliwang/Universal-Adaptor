@@ -1,17 +1,32 @@
 import os
 import json
 import argparse
+import torch
 import numpy as np
+import torch.nn.functional as F
 from tqdm import tqdm
 from extract import Extractor
 from multiprocessing import Pool, cpu_count
 
 
+def interpolate(mel, src_ext, tgt_ext):
+    src_hop_length = src_ext.spec_config["hop_length"]
+    tgt_hop_length = tgt_ext.spec_config["hop_length"]
+    src_sample_rate = src_ext.wav_config["sample_rate"]
+    tgt_sample_rate = tgt_ext.wav_config["sample_rate"]
+    scale_factor = ( tgt_sample_rate / tgt_hop_length ) / ( src_sample_rate / src_hop_length )
+    mel = torch.Tensor(mel)
+    if mel.dim() == 2:
+        mel = mel.unsqueeze(0)
+    mel = F.interpolate(mel, scale_factor=scale_factor, recompute_scale_factor=True)
+    mel = mel.squeeze(0).numpy()
+    return mel
+
+
 def process(x):
     src_ext, tgt_ext, n_iter, fpath, outdir = x
     S = np.load(fpath)
-    y = src_ext.inverse(S, n_iter=n_iter)
-    S = tgt_ext.convert(y)
+    S = interpolate(S, src_ext, tgt_ext)
     # S = tgt_ext.post_convert(S)
     idx = fpath.split('/')[-1].split('.')[0]
     outpath = os.path.join(outdir, f'{idx}.npy')
