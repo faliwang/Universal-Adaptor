@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 from extract import Extractor
 from multiprocessing import Pool, cpu_count
+from utils import audio
 
 
 def interpolate(mel, src_ext, tgt_ext):
@@ -26,8 +27,11 @@ def interpolate(mel, src_ext, tgt_ext):
 def process(x):
     src_ext, tgt_ext, n_iter, fpath, outdir = x
     S = np.load(fpath)
+    S = src_ext.post_inverse(S)
     S = interpolate(S, src_ext, tgt_ext)
-    # S = tgt_ext.post_convert(S)
+    if tgt_ext.post_config["amp_to_db"]:
+        S = audio.amp_to_db(S, {"log_base": 'e', "log_factor": 1})
+    S = tgt_ext.post_convert(S)
     idx = fpath.split('/')[-1].split('.')[0]
     outpath = os.path.join(outdir, f'{idx}.npy')
     np.save(outpath, S, allow_pickle=False)

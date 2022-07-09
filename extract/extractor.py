@@ -60,3 +60,10 @@ class Extractor:
         if self.spec_config["preemphasis"] is not None:
             pass
         return y
+    
+    def post_inverse(self, S):
+        if self.post_config["amp_to_db"]:
+            if self.post_config["normalize_spec"]:
+                S = audio.denormalize(S, self.post_config)
+            S = audio.db_to_amp(S, self.post_config)
+        return S
