@@ -145,6 +145,8 @@ def normalize(S, post_config):
         S = (S-min_level_db)/-min_level_db
     if top_level_db is not None:
         S = np.maximum(S, -top_level_db) / top_level_db
+    if post_config["clip_norm"]:
+        S = np.clip(S, 0, 1)
     return S
 
 
