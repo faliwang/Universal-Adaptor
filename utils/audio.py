@@ -57,6 +57,10 @@ def preemphasis(y, preemph):
     return librosa.effects.preemphasis(y, coef=preemph)
 
 
+def deemphasis(y, preemph):
+    return librosa.effects.deemphasis(y, coef=preemph)
+
+
 def stft(y, spec_config):
     y = np.pad(y, [(spec_config["left_pad"],spec_config["right_pad"])], mode=spec_config["pad_mode"])
     return librosa.stft(y, n_fft=spec_config["n_fft"],

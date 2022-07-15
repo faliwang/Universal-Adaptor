@@ -58,7 +58,7 @@ class Extractor:
         S = audio.stft_depower(S, self.spec_config["stft_power"])
         y = audio.stft_to_wav(S, self.spec_config, n_iter)
         if self.spec_config["preemphasis"] is not None:
-            pass
+            y = audio.deemphasis(y, self.spec_config["preemphasis"])
         return y
     
     def post_inverse(self, S):
