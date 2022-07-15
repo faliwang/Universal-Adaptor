@@ -23,8 +23,8 @@ def generate(config, data, extension, n_workers, outdir):
     if config == 'all':
         configs = os.listdir('./config')
         configs.sort()
-        for config in configs:
-            config_json = os.path.join(os.getcwd(), 'config', config)
+        for conf in configs:
+            config_json = os.path.join(os.getcwd(), 'config', conf)
             with open(config_json, 'r') as f:
                 cfg = json.load(f)
                 cfgs.append(cfg)
@@ -44,7 +44,10 @@ def generate(config, data, extension, n_workers, outdir):
     print(f'{len(data_list)} {extension[1:]} files found in {data}')
     f_list = []
     for i in range(len(configs)):
-        config_name = configs[i][:-5].split('_')[1]
+        if config == 'all':
+            config_name = configs[i][:-5].split('_')[1]
+        else:
+            config_name = config[:-5].split('/')[-1].split('_')[1]
         out_dir = os.path.join(outdir, config_name)
         os.makedirs(out_dir, exist_ok=True)
         _list = [(exts[i], x, out_dir) for x in data_list]

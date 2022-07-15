@@ -25,8 +25,8 @@ def transform(src_config, tgt_config, data, extension,
     if src_config == 'all':
         src_configs = os.listdir('./config')
         src_configs.sort()
-        for src_config in src_configs:
-            src_config_json = os.path.join(os.getcwd(), 'config', src_config)
+        for src_conf in src_configs:
+            src_config_json = os.path.join(os.getcwd(), 'config', src_conf)
             with open(src_config_json, 'r') as f:
                 src_cfg = json.load(f)
                 src_cfgs.append(src_cfg)
@@ -39,8 +39,8 @@ def transform(src_config, tgt_config, data, extension,
     if tgt_config == 'all':
         tgt_configs = os.listdir('./config')
         tgt_configs.sort()
-        for tgt_config in tgt_configs:
-            tgt_config_json = os.path.join(os.getcwd(), 'config', tgt_config)
+        for tgt_conf in tgt_configs:
+            tgt_config_json = os.path.join(os.getcwd(), 'config', tgt_conf)
             with open(tgt_config_json, 'r') as f:
                 tgt_cfg = json.load(f)
                 tgt_cfgs.append(tgt_cfg)
@@ -66,13 +66,22 @@ def transform(src_config, tgt_config, data, extension,
         data_list = [x for x in os.listdir(os.path.join(data, config_name)) if x.endswith(extension)]
     print(f'{len(data_list)} {extension[1:]} files found in {data}')
     f_list = []
-    for i in range(len(src_configs)):
-        src_config_name = src_configs[i][:-5].split('_')[1]
-        for j in range(len(tgt_configs)):
-            tgt_config_name = tgt_configs[j][:-5].split('_')[1]
+    for i in range(len(src_cfgs)):
+        if src_config == 'all':
+            src_config_name = src_configs[i][:-5].split('_')[1]
+        else:
+            src_config_name = src_config[:-5].split('/')[-1].split('_')[1]
+        for j in range(len(tgt_cfgs)):
+            if tgt_config == 'all':
+                tgt_config_name = tgt_configs[j][:-5].split('_')[1]
+            else:
+                tgt_config_name = tgt_config[:-5].split('/')[-1].split('_')[1]
             out_dir = os.path.join(outdir, src_config_name + '_' + tgt_config_name)
             os.makedirs(out_dir, exist_ok=True)
-            _list = [(src_exts[i], tgt_exts[j], n_iter, os.path.join(data, src_config_name, x), out_dir) for x in data_list]
+            if src_config == 'all':
+                _list = [(src_exts[i], tgt_exts[j], n_iter, os.path.join(data, src_config_name, x), out_dir) for x in data_list]
+            else:
+                _list = [(src_exts[i], tgt_exts[j], n_iter, os.path.join(data, x), out_dir) for x in data_list]
             f_list += _list    
 
     # Extract
