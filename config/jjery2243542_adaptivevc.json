@@ -1,0 +1,40 @@
+{
+    "github_repo": "https://github.com/jjery2243542/adaptive_voice_conversion",
+    "commit": "d1cad9fb4eff74ca56714f9a2527124132fb1ed7",
+    "wav_config": {
+        "sample_rate": 24000,
+        "normalize_loudness": null,
+        "peak_norm": 1.0,
+        "trim_silence": true,
+        "trim_silence_threshold_in_db": 15,
+        "trim_frame_size": 2048,
+        "trim_hop_size": 512,
+        "highpass_cutoff": 0
+    },
+    "spec_config": {
+        "preemphasis": 0.97,
+        "n_fft": 2048,
+        "hop_length": 300,
+        "win_length": 1200,
+        "window": "hann",
+        "left_pad": 0,
+        "right_pad": 0,
+        "pad_mode": "reflect",
+        "center": true,
+        "stft_power": 1,
+        "mel_spec": true,
+        "num_mels": 512,
+        "fmin": 0,
+        "fmax": 12000
+    },
+    "post_config": {
+        "amp_to_db": true,
+        "log_base": 10,
+        "log_factor": 20,
+        "normalize_spec": false,
+        "ref_level_db": 20,
+        "min_level_db": -100,
+        "top_level_db": null,
+        "clip_norm": true
+    }
+}

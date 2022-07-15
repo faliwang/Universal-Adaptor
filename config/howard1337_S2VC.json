@@ -1,0 +1,40 @@
+{
+    "github_repo": "https://github.com/howard1337/S2VC",
+    "commit": "8a6dcebc052424c41c62be0b22cb581258c5b4aa",
+    "wav_config": {
+        "sample_rate": 16000,
+        "normalize_loudness": null,
+        "peak_norm": 1.0,
+        "trim_silence": true,
+        "trim_silence_threshold_in_db": 25,
+        "trim_frame_size": 512,
+        "trim_hop_size": 128,
+        "highpass_cutoff": 0
+    },
+    "spec_config": {
+        "preemphasis": 0.97,
+        "n_fft": 465,
+        "hop_length": 160,
+        "win_length": 465,
+        "window": "hann",
+        "left_pad": 0,
+        "right_pad": 0,
+        "pad_mode": "constant",
+        "center": true,
+        "stft_power": 1,
+        "mel_spec": true,
+        "num_mels": 80,
+        "fmin": 80,
+        "fmax": 8000
+    },
+    "post_config": {
+        "amp_to_db": true,
+        "log_base": "e",
+        "log_factor": 1,
+        "normalize_spec": false,
+        "ref_level_db": 20,
+        "min_level_db": -100,
+        "top_level_db": null,
+        "clip_norm": false
+    }
+}

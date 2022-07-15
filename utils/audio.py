@@ -168,7 +168,7 @@ def denormalize(S, post_config):
 
 def stft_to_wav(S, spec_config, n_iter):
     audio = librosa.griffinlim(
-            S, n_iter=n_iter, hop_length=spec_config["hop_length"],
+            S, n_iter=n_iter, hop_length=spec_config["hop_length"], n_fft=spec_config['n_fft'],
             win_length=spec_config["win_length"], window=spec_config["window"], center=spec_config["center"])
     audio = audio[spec_config["left_pad"]:]
     if spec_config["right_pad"] > 0:

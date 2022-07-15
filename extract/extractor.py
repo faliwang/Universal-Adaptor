@@ -46,9 +46,14 @@ class Extractor:
             S = audio.db_change_base(S, self.post_config)
             if self.post_config["normalize_spec"]:
                 S = audio.normalize(S, self.post_config)
+        if 'ppg' in self.github_repo:
+            S = (S + 12.5) / (2.5 + 12.5) * 8.0 - 4.0
+            S = np.clip(S, -4., 4.)  
         return S
 
     def inverse(self, S, n_iter=32):
+        if 'ppg' in self.github_repo:
+            S = (S + 4.0) / 8.0 * (2.5 + 12.5) - 12.5
         if self.post_config["amp_to_db"]:
             if self.post_config["normalize_spec"]:
                 S = audio.denormalize(S, self.post_config)

@@ -1,0 +1,40 @@
+{
+    "github_repo": "https://github.com/liusongxiang/ppg-vc",
+    "commit": "4769534d45265d52a904b850da5a622601885777",
+    "wav_config": {
+        "sample_rate": 24000,
+        "normalize_loudness": null,
+        "peak_norm": 0.95,
+        "trim_silence": false,
+        "trim_silence_threshold_in_db": 0,
+        "trim_frame_size": 0,
+        "trim_hop_size": 0,
+        "highpass_cutoff": 0
+    },
+    "spec_config": {
+        "preemphasis": null,
+        "n_fft": 1024,
+        "hop_length": 240,
+        "win_length": 1024,
+        "window": "hann",
+        "left_pad": 392,
+        "right_pad": 392,
+        "pad_mode": "reflect",
+        "center": false,
+        "stft_power": 1,
+        "mel_spec": true,
+        "num_mels": 80,
+        "fmin": 0,
+        "fmax": 8000
+    },
+    "post_config": {
+        "amp_to_db": true,
+        "log_base": "e",
+        "log_factor": 1,
+        "normalize_spec": false,
+        "ref_level_db": 0,
+        "min_level_db": -100,
+        "top_level_db": null,
+        "clip_norm": false
+    }
+}
