@@ -43,7 +43,7 @@ def generate(config, data, extension, n_workers, outdir):
     data_list = [os.path.join(data, x) for x in os.listdir(data) if x.endswith(extension)]
     print(f'{len(data_list)} {extension[1:]} files found in {data}')
     f_list = []
-    for i in range(len(configs)):
+    for i in range(len(cfgs)):
         if config == 'all':
             config_name = configs[i][:-5].split('_')[1]
         else:

@@ -1,6 +1,7 @@
 import os
 import json
 import argparse
+import librosa
 import numpy as np
 from tqdm import tqdm
 from extract import Extractor
@@ -10,11 +11,14 @@ from multiprocessing import Pool, cpu_count
 def process(x):
     src_ext, tgt_ext, n_iter, fpath, outdir = x
     S = np.load(fpath)
+    # S = S.T
     y = src_ext.inverse(S, n_iter=n_iter)
-    S = tgt_ext.convert(y)
+    y_r = librosa.resample(y, orig_sr=src_ext.wav_config["sample_rate"], target_sr=tgt_ext.wav_config["sample_rate"])
+    S = tgt_ext.convert(y_r)
     # S = tgt_ext.post_convert(S)
     idx = fpath.split('/')[-1].split('.')[0]
     outpath = os.path.join(outdir, f'{idx}.npy')
+    # src_ext.save(y, os.path.join(outdir, f'{idx}.wav'))
     np.save(outpath, S, allow_pickle=False)
 
 
